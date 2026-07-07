@@ -3,6 +3,10 @@
 // tab where the platform allows it) — true closed-app push needs a backend
 // and is planned for the Supabase phase.
 // Suppressed during the user's own sleep window (by their role's schedule).
+//
+// iOS quirks: the Notification API exists only inside an installed PWA
+// (added to home screen), and notifications must go through the service
+// worker (`registration.showNotification`) — `new Notification()` throws.
 
 import { useEffect } from "react";
 import { useSettings } from "../../shared/state/settings";
@@ -15,9 +19,32 @@ export function notifStatus(): NotificationPermission | "unsupported" {
   return "Notification" in window ? Notification.permission : "unsupported";
 }
 
-export async function enableNotifications(): Promise<boolean> {
-  if (!("Notification" in window)) return false;
-  return (await Notification.requestPermission()) === "granted";
+export type EnableResult = "granted" | "denied" | "unsupported";
+
+export async function enableNotifications(): Promise<EnableResult> {
+  if (!("Notification" in window)) return "unsupported";
+  if (Notification.permission === "denied") return "denied";
+  const p = await Notification.requestPermission();
+  return p === "granted" ? "granted" : "denied";
+}
+
+export async function showNotification(title: string, body: string): Promise<boolean> {
+  if (notifStatus() !== "granted") return false;
+  const opts: NotificationOptions = { body, icon: "/icon-192.png", tag: "futari-nudge" };
+  try {
+    // Preferred path — required on iOS, works everywhere a SW is registered.
+    const reg = await navigator.serviceWorker?.getRegistration();
+    if (reg) {
+      await reg.showNotification(title, opts);
+      return true;
+    }
+  } catch { /* fall through */ }
+  try {
+    new Notification(title, opts);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function useHourlyNudge(): void {
@@ -44,13 +71,7 @@ export function useHourlyNudge(): void {
       if (localStorage.getItem(FIRED_KEY) === hourKey) return;
       localStorage.setItem(FIRED_KEY, hourKey);
 
-      try {
-        new Notification(t.nudgeTitle, {
-          body: t.nudgeBody,
-          icon: "/icon-192.png",
-          tag: "futari-nudge", // replaces instead of stacking
-        });
-      } catch { /* some platforms require SW-based notifications; ignore */ }
+      void showNotification(t.nudgeTitle, t.nudgeBody);
     };
 
     check();

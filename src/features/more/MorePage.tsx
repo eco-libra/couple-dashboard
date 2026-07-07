@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
 import { useSettings, updateSettings, encodeShare } from "../../shared/state/settings";
-import { enableNotifications, notifStatus } from "../same-moment/useHourlyNudge";
+import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -57,13 +57,14 @@ export function MorePage() {
         {s.notif && notifStatus() === "granted" ? (
           <div className="row">
             <span>{t.notifEnabled}</span>
+            <button onClick={() => showNotification(t.nudgeTitle, t.nudgeBody)}>{t.notifTest}</button>
             <button onClick={() => updateSettings({ notif: false })}>OFF</button>
           </div>
         ) : (
           <button onClick={async () => {
-            const ok = await enableNotifications();
-            if (ok) updateSettings({ notif: true });
-            else alert(t.notifDenied);
+            const r = await enableNotifications();
+            if (r === "granted") updateSettings({ notif: true });
+            else alert(r === "unsupported" ? t.notifUnsupported : t.notifDenied);
           }}>{t.notifEnable}</button>
         )}
         <p className="muted" style={{ marginTop: 8 }}>{t.notifNote}</p>

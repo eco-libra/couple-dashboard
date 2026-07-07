@@ -40,6 +40,7 @@ export interface Dict {
   nudgeTitle: string; nudgeBody: string;
   notifLabel: string; notifEnable: string; notifEnabled: string;
   notifDenied: string; notifNote: string;
+  notifUnsupported: string; notifTest: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -102,6 +103,8 @@ export const DICTS: Record<Lang, Dict> = {
     notifEnable: "🔔 通知をオンにする", notifEnabled: "🔔 オン（毎時0分・睡眠時間は自動でお休み）",
     notifDenied: "ブラウザで通知がブロックされています。サイト設定から許可してください。",
     notifNote: "アプリを開いている間（またはバックグラウンド時）に毎時0分に通知します。あなたの就寝〜起床の間は鳴りません。",
+    notifUnsupported: "このブラウザでは通知が使えません。iPhoneの場合は、共有ボタン →「ホーム画面に追加」でアプリとして開いてからオンにしてください。",
+    notifTest: "テスト通知",
   },
   en: {
     locale: "en-US",
@@ -160,6 +163,8 @@ export const DICTS: Record<Lang, Dict> = {
     notifEnable: "🔔 Turn on notifications", notifEnabled: "🔔 On (every hour, pauses while you sleep)",
     notifDenied: "Notifications are blocked in your browser. Allow them in site settings.",
     notifNote: "Rings at the top of each hour while the app is open (or in the background). Stays quiet between your bedtime and wake-up.",
+    notifUnsupported: "Notifications aren't available in this browser. On iPhone, use Share → 'Add to Home Screen' and open the app from there first.",
+    notifTest: "Test notification",
   },
   es: {
     locale: "es-CL",
@@ -218,5 +223,7 @@ export const DICTS: Record<Lang, Dict> = {
     notifEnable: "🔔 Activar notificaciones", notifEnabled: "🔔 Activado (cada hora, en pausa mientras duermes)",
     notifDenied: "Las notificaciones están bloqueadas en tu navegador. Permítelas en la configuración del sitio.",
     notifNote: "Suena a la hora en punto mientras la app está abierta (o en segundo plano). Guarda silencio entre tu hora de dormir y despertar.",
+    notifUnsupported: "Las notificaciones no están disponibles en este navegador. En iPhone, usa Compartir → 'Añadir a pantalla de inicio' y abre la app desde ahí.",
+    notifTest: "Notificación de prueba",
   },
 };
