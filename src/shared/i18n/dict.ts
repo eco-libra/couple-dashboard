@@ -44,6 +44,10 @@ export interface Dict {
   memTooBig: string;
   rateLabel: string; holidaysLabel: string;
   streakLabel: (n: number) => string;
+  aiTitle: string; aiSub: string;
+  aiTransLabel: string; aiPlaceholder: string; aiTranslateBtn: string;
+  aiIdeasLabel: string; aiStarterBtn: string; aiDateBtn: string;
+  aiThinking: string; aiCopy: string; aiError: string; aiNotConfigured: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -111,6 +115,15 @@ export const DICTS: Record<Lang, Dict> = {
     memTooBig: "ファイルが大きすぎます（25MBまで。動画は数秒の短いものにしてください）",
     rateLabel: "為替（円 ⇄ チリペソ）", holidaysLabel: "ふたつの国の祝日",
     streakLabel: n => `🔥 ${n}日連続`,
+    aiTitle: "AIアシスタント", aiSub: "翻訳と、今夜のふたりのアイデア",
+    aiTransLabel: "恋人向け翻訳（日本語 ⇄ チリのスペイン語）",
+    aiPlaceholder: "送りたいメッセージを入力…（言語は自動判別）",
+    aiTranslateBtn: "翻訳する",
+    aiIdeasLabel: "今夜のアイデア",
+    aiStarterBtn: "💬 会話のきっかけ", aiDateBtn: "🍝 遠距離デート案",
+    aiThinking: "考え中…", aiCopy: "コピー",
+    aiError: "エラーが起きました。少し待ってもう一度試してください。",
+    aiNotConfigured: "AI機能は準備中です（APIキー未設定）。",
   },
   en: {
     locale: "en-US",
@@ -174,6 +187,15 @@ export const DICTS: Record<Lang, Dict> = {
     memTooBig: "File is too big (25MB max — keep videos to a few seconds)",
     rateLabel: "Exchange rate (JPY ⇄ CLP)", holidaysLabel: "Holidays in both countries",
     streakLabel: n => `🔥 ${n}-day streak`,
+    aiTitle: "AI Assistant", aiSub: "Translation and ideas for tonight",
+    aiTransLabel: "Couple translator (Japanese ⇄ Chilean Spanish)",
+    aiPlaceholder: "Type the message you want to send… (language auto-detected)",
+    aiTranslateBtn: "Translate",
+    aiIdeasLabel: "Ideas for tonight",
+    aiStarterBtn: "💬 Conversation starter", aiDateBtn: "🍝 Long-distance date idea",
+    aiThinking: "Thinking…", aiCopy: "Copy",
+    aiError: "Something went wrong. Please try again in a moment.",
+    aiNotConfigured: "AI features are being set up (API key missing).",
   },
   es: {
     locale: "es-CL",
@@ -237,5 +259,14 @@ export const DICTS: Record<Lang, Dict> = {
     memTooBig: "El archivo es demasiado grande (máx. 25MB — videos de pocos segundos)",
     rateLabel: "Tipo de cambio (JPY ⇄ CLP)", holidaysLabel: "Feriados de ambos países",
     streakLabel: n => `🔥 racha de ${n} días`,
+    aiTitle: "Asistente IA", aiSub: "Traducción e ideas para esta noche",
+    aiTransLabel: "Traductor de pareja (japonés ⇄ español chileno)",
+    aiPlaceholder: "Escribe el mensaje que quieres enviar… (idioma autodetectado)",
+    aiTranslateBtn: "Traducir",
+    aiIdeasLabel: "Ideas para hoy",
+    aiStarterBtn: "💬 Tema de conversación", aiDateBtn: "🍝 Idea de cita a distancia",
+    aiThinking: "Pensando…", aiCopy: "Copiar",
+    aiError: "Algo salió mal. Intenta de nuevo en un momento.",
+    aiNotConfigured: "Las funciones de IA están en preparación (falta la clave API).",
   },
 };

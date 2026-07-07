@@ -12,6 +12,7 @@ import { MorePage } from "../features/more/MorePage";
 import { SameMomentPage } from "../features/same-moment/SameMomentPage";
 import { useHourlyNudge } from "../features/same-moment/useHourlyNudge";
 import { MapPage } from "../features/map/MapPage";
+import { AiPage } from "../features/ai/AiPage";
 
 export function App() {
   const t = useT();
@@ -43,6 +44,7 @@ export function App() {
         <Route path="/map" element={<MapPage />} />
         <Route path="/memories" element={<MemoriesPage />} />
         <Route path="/milestones" element={<MilestonesPage />} />
+        <Route path="/ai" element={<AiPage />} />
         <Route path="/more" element={<MorePage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
