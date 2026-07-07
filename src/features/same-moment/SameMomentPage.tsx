@@ -4,7 +4,10 @@ import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
 import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
-import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour } from "./moment";
+import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
+import { computeStreak } from "./streak";
+
+const MAX_PAST_DAYS = 30;
 
 const MAX_BYTES = 25 * 1024 * 1024;
 
@@ -56,9 +59,12 @@ export function SameMomentPage() {
   const [photosB, setPhotosB] = useState<Map<number, MediaItem>>(new Map());
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [dayOffset, setDayOffset] = useState(0); // 0 = today, positive = days back
+  const [streak, setStreak] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const dayKey = momentDayKey(now);
+  const todayKey = momentDayKey(now);
+  const dayKey = shiftDayKey(todayKey, -dayOffset);
   const role = s.role;
   const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
   const currentHour = zoneClock(TZ_A, now).hour;
@@ -73,6 +79,9 @@ export function SameMomentPage() {
   }, [dayKey]);
 
   useEffect(() => { reload(); }, [reload]);
+  useEffect(() => {
+    if (s.role) computeStreak(todayKey).then(setStreak);
+  }, [todayKey, s.role]);
 
   if (!role) {
     return (
@@ -89,26 +98,38 @@ export function SameMomentPage() {
     if (f.size > MAX_BYTES) { setMsg(t.memTooBig); setTimeout(() => setMsg(""), 4000); return; }
     setBusy(true);
     setMsg(t.memUploading);
-    const ok = await uploadMedia([f], undefined, [momentTag(dayKey, role)]);
+    const ok = await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
+    setDayOffset(0); // uploads always belong to today — jump back to it
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
     setTimeout(reload, 2500); // CDN list cache lags briefly
   };
 
+  const isToday = dayOffset === 0;
   const dayLabel = new Intl.DateTimeFormat(t.locale, {
-    timeZone: TZ_A, month: "long", day: "numeric", weekday: "short",
-  }).format(now);
+    month: "long", day: "numeric", weekday: "short",
+  }).format(dayKeyToDate(dayKey));
 
-  const hours = Array.from({ length: currentHour + 1 }, (_, i) => currentHour - i);
+  const topHour = isToday ? currentHour : 23;
+  const hours = Array.from({ length: topHour + 1 }, (_, i) => topHour - i);
 
   return (
     <main className="page">
       <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
         <h1 className="page-title">📸 {t.navMoment}</h1>
-        <button className="ghost-btn" disabled={busy} onClick={reload} aria-label={t.refresh}>🔄</button>
+        <div className="row" style={{ gap: 4 }}>
+          {streak > 0 && <span className="streak-pill">{t.streakLabel(streak)}</span>}
+          <button className="ghost-btn" disabled={busy} onClick={reload} aria-label={t.refresh}>🔄</button>
+        </div>
       </div>
-      <p className="page-sub" style={{ marginTop: -12 }}>{dayLabel} — {t.momentTeaser2}</p>
+      <div className="row day-nav">
+        <button className="ghost-btn" disabled={dayOffset >= MAX_PAST_DAYS}
+          onClick={() => setDayOffset(o => Math.min(MAX_PAST_DAYS, o + 1))} aria-label="previous day">‹</button>
+        <span className="day-nav-label">{dayLabel}</span>
+        <button className="ghost-btn" disabled={isToday}
+          onClick={() => setDayOffset(o => Math.max(0, o - 1))} aria-label="next day">›</button>
+      </div>
       {msg && <p className="muted" style={{ margin: 0 }}>{msg}</p>}
 
       <section className="feed">
@@ -139,8 +160,10 @@ export function SameMomentPage() {
 
       <p className="muted">{t.momentRuleHourly}</p>
 
-      <button className="fab" disabled={busy} onClick={() => fileRef.current?.click()}
-        aria-label={t.momentUploadBtn}>📸</button>
+      {isToday && (
+        <button className="fab" disabled={busy} onClick={() => fileRef.current?.click()}
+          aria-label={t.momentUploadBtn}>📸</button>
+      )}
       <input ref={fileRef} type="file" accept="image/*,video/*" hidden
         onChange={e => { onFile(e.target.files); e.target.value = ""; }} />
     </main>

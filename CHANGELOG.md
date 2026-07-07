@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0] — 2026-07-08
+### Added
+- **Exchange rate card** (Home): ¥1,000 ⇄ CLP both directions, daily-cached,
+  via open.er-api.com (no key).
+- **Holidays card** (Home): next 5 public holidays across Japan and Chile
+  with local names, flags and days-until, via date.nager.at (cached per year).
+- **Moment streak**: 🔥 pill showing consecutive days on which both sides
+  posted. Past days cached permanently; an incomplete today doesn't break
+  the streak.
+- **Past-day browsing** on Moment: ‹ date › navigation up to 30 days back;
+  uploads always file to today and jump the view back. 2 new tests (27 total).
+
 ## [0.7.1] — 2026-07-08
 ### Changed
 - Moment feed redesign: newest-first vertical timeline; full-bleed square

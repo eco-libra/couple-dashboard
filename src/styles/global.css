@@ -196,7 +196,18 @@ button { cursor: pointer }
   border-bottom: 1px dashed var(--line);
   font-variant-numeric: tabular-nums;
 }
-.ghost-btn { background: transparent; border: none; padding: 6px; font-size: 1.1rem }
+.ghost-btn { background: transparent; border: none; padding: 6px 10px; font-size: 1.1rem }
+.ghost-btn:disabled { opacity: .35 }
+.day-nav { justify-content: center; gap: 6px; margin-top: -8px }
+.day-nav-label {
+  font-family: var(--font-display); font-size: 1.05rem; letter-spacing: .03em;
+  min-width: 10em; text-align: center;
+}
+.streak-pill {
+  padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+  background: rgba(229, 128, 137, .18); color: var(--akane-ink);
+  border: 1px solid rgba(229, 128, 137, .4); white-space: nowrap;
+}
 .fab {
   position: fixed; right: 18px;
   bottom: calc(var(--nav-h) + 18px + env(safe-area-inset-bottom));

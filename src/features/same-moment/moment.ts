@@ -15,6 +15,18 @@ export function momentTag(dayKey: string, role: "A" | "B"): string {
   return `m-${dayKey}-${role}`;
 }
 
+/** Day key N days before the given key (calendar arithmetic on YYYYMMDD). */
+export function shiftDayKey(dayKey: string, days: number): string {
+  const d = new Date(Date.UTC(+dayKey.slice(0, 4), +dayKey.slice(4, 6) - 1, +dayKey.slice(6, 8)));
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+/** Human-readable Date (local) for a day key, at midnight. */
+export function dayKeyToDate(dayKey: string): Date {
+  return new Date(+dayKey.slice(0, 4), +dayKey.slice(4, 6) - 1, +dayKey.slice(6, 8));
+}
+
 /** Tokyo hour (0-23) of the instant a media item was uploaded. */
 export function tokyoHourOf(item: MediaItem): number {
   return zoneClock(TZ_A, new Date(item.version * 1000)).hour;

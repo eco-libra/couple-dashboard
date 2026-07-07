@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { momentDayKey, tokyoHourOf, bucketByTokyoHour, asleepAtTokyoHour } from "./moment";
+import { momentDayKey, tokyoHourOf, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
 import type { MediaItem } from "../../shared/services/cloudinary";
 
 const item = (iso: string): MediaItem => ({
@@ -27,6 +27,21 @@ describe("moment buckets", () => {
     expect(b.get(20)).toEqual(late);
     expect(b.get(21)).toEqual(other);
     expect(b.get(19)).toBeUndefined();
+  });
+});
+
+describe("day key arithmetic", () => {
+  it("shifts across month and year boundaries", () => {
+    expect(shiftDayKey("20260301", -1)).toBe("20260228");
+    expect(shiftDayKey("20260101", -1)).toBe("20251231");
+    expect(shiftDayKey("20260708", -7)).toBe("20260701");
+    expect(shiftDayKey("20260708", 1)).toBe("20260709");
+  });
+  it("round-trips through a local Date", () => {
+    const d = dayKeyToDate("20260708");
+    expect(d.getFullYear()).toBe(2026);
+    expect(d.getMonth()).toBe(6);
+    expect(d.getDate()).toBe(8);
   });
 });
 

@@ -5,6 +5,8 @@ import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
 import { OverlapSummary } from "../clocks/OverlapTimeline";
 import { ReunionCountdown, TogetherDays } from "../milestones/MilestonesPage";
+import { RateCard } from "../context/RateCard";
+import { HolidaysCard } from "../context/HolidaysCard";
 
 export function HomePage() {
   const t = useT();
@@ -39,6 +41,9 @@ export function HomePage() {
           <div className="big-num"><TogetherDays /></div>
         </Link>
       </div>
+
+      <RateCard />
+      <HolidaysCard />
 
       <Link to="/memories" className="card">
         <p className="label">{t.homeMemCard}</p>

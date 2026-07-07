@@ -42,6 +42,8 @@ export interface Dict {
   notifDenied: string; notifNote: string;
   notifUnsupported: string; notifTest: string;
   memTooBig: string;
+  rateLabel: string; holidaysLabel: string;
+  streakLabel: (n: number) => string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -107,6 +109,8 @@ export const DICTS: Record<Lang, Dict> = {
     notifUnsupported: "このブラウザでは通知が使えません。iPhoneの場合は、共有ボタン →「ホーム画面に追加」でアプリとして開いてからオンにしてください。",
     notifTest: "テスト通知",
     memTooBig: "ファイルが大きすぎます（25MBまで。動画は数秒の短いものにしてください）",
+    rateLabel: "為替（円 ⇄ チリペソ）", holidaysLabel: "ふたつの国の祝日",
+    streakLabel: n => `🔥 ${n}日連続`,
   },
   en: {
     locale: "en-US",
@@ -168,6 +172,8 @@ export const DICTS: Record<Lang, Dict> = {
     notifUnsupported: "Notifications aren't available in this browser. On iPhone, use Share → 'Add to Home Screen' and open the app from there first.",
     notifTest: "Test notification",
     memTooBig: "File is too big (25MB max — keep videos to a few seconds)",
+    rateLabel: "Exchange rate (JPY ⇄ CLP)", holidaysLabel: "Holidays in both countries",
+    streakLabel: n => `🔥 ${n}-day streak`,
   },
   es: {
     locale: "es-CL",
@@ -229,5 +235,7 @@ export const DICTS: Record<Lang, Dict> = {
     notifUnsupported: "Las notificaciones no están disponibles en este navegador. En iPhone, usa Compartir → 'Añadir a pantalla de inicio' y abre la app desde ahí.",
     notifTest: "Notificación de prueba",
     memTooBig: "El archivo es demasiado grande (máx. 25MB — videos de pocos segundos)",
+    rateLabel: "Tipo de cambio (JPY ⇄ CLP)", holidaysLabel: "Feriados de ambos países",
+    streakLabel: n => `🔥 racha de ${n} días`,
   },
 };

@@ -32,7 +32,8 @@
   - [ ] Same Moment: notifications + streak (needs backend)
 
 ## Later
-- [ ] Exchange rate + holidays (v1.2)
+- [x] Exchange rate + holidays (v1.2) — Home cards, shipped 0.8.0
+- [x] Moment streak + past-day browsing — shipped 0.8.0
 - [ ] AI translation & suggestions via server route (v1.3)
 - [ ] Analytics + Wrapped (v1.4)
 - [ ] Flights, voice, calendar, push (v2.0)
