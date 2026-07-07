@@ -11,19 +11,25 @@ export interface MediaItem {
   rtype: "image" | "video";
 }
 
+async function listTag(tag: string, type: "image" | "video"): Promise<MediaItem[]> {
+  try {
+    // cache-bust: the list endpoint is CDN-cached and lags behind uploads
+    const r = await fetch(`https://res.cloudinary.com/${CLOUD}/${type}/list/${tag}.json?t=${Math.floor(Date.now() / 60000)}`);
+    if (!r.ok) return [];
+    const j = await r.json();
+    return (j.resources ?? []).map((x: Omit<MediaItem, "rtype">) => ({ ...x, rtype: type }));
+  } catch {
+    return [];
+  }
+}
+
 export async function listMedia(): Promise<MediaItem[]> {
-  const get = async (type: "image" | "video"): Promise<MediaItem[]> => {
-    try {
-      const r = await fetch(`https://res.cloudinary.com/${CLOUD}/${type}/list/${TAG}.json`);
-      if (!r.ok) return [];
-      const j = await r.json();
-      return (j.resources ?? []).map((x: Omit<MediaItem, "rtype">) => ({ ...x, rtype: type }));
-    } catch {
-      return [];
-    }
-  };
-  const [img, vid] = await Promise.all([get("image"), get("video")]);
+  const [img, vid] = await Promise.all([listTag(TAG, "image"), listTag(TAG, "video")]);
   return [...img, ...vid];
+}
+
+export function listImagesByTag(tag: string): Promise<MediaItem[]> {
+  return listTag(tag, "image");
 }
 
 export function imageUrl(m: MediaItem, width = 900): string {
@@ -38,6 +44,7 @@ export function videoUrl(m: MediaItem): string {
 export async function uploadMedia(
   files: File[],
   onProgress?: (done: number, total: number) => void,
+  extraTags: string[] = [],
 ): Promise<number> {
   let ok = 0, done = 0;
   const queue = [...files];
@@ -47,7 +54,7 @@ export async function uploadMedia(
       const fd = new FormData();
       fd.append("file", f);
       fd.append("upload_preset", PRESET);
-      fd.append("tags", TAG);
+      fd.append("tags", [TAG, ...extraTags].join(","));
       try {
         const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/auto/upload`, { method: "POST", body: fd });
         if (r.ok) ok++;

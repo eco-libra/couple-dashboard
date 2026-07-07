@@ -29,6 +29,13 @@ export interface Dict {
   memoryLabel: string; memAdd: string; memEmpty: string; memHint: string;
   memUploading: string; memUploaded: string; memFailed: string;
   comingSoon: string; momentTeaser: string; mapTeaser: string;
+  rolePick: string; roleNote: string;
+  momentTeaser2: string; momentUnlocked: string;
+  momentYours: string; momentTheirs: string;
+  momentAddYours: string; momentWaiting: string; momentLocked: string;
+  momentDone: string; momentUploadBtn: string; momentRule: string;
+  refresh: string;
+  mapDistance: string; mapNote: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -71,6 +78,17 @@ export const DICTS: Record<Lang, Dict> = {
     homeTimeCard: "いまの時刻", homeTalkCard: "話せる時間", homeMeetCard: "次に会える日",
     homeMemCard: "思い出", homeMilestoneCard: "ふたりの記録",
     language: "言語",
+    rolePick: "あなたはどちら側？", roleNote: "この端末に保存されます。一度選べば次からは聞かれません。",
+    momentTeaser2: "同じ「いま」を、13時間離れた空の下で撮り合う。",
+    momentUnlocked: "今日の瞬間が揃いました！",
+    momentYours: "あなたの1枚", momentTheirs: "相手の1枚",
+    momentAddYours: "今日の1枚をまだ撮っていません",
+    momentWaiting: "相手の1枚を待っています…",
+    momentLocked: "あなたも今日の1枚を追加すると公開されます",
+    momentDone: "今日は追加済み", momentUploadBtn: "📸 いまを撮って送る",
+    momentRule: "1日1枚。二人とも追加すると、同時に公開されます（日付は東京時間基準）。",
+    refresh: "更新",
+    mapDistance: "二人の距離", mapNote: "点線は最短ルート（大圏コース）。暗い部分は今ちょうど夜のところ。",
   },
   en: {
     locale: "en-US",
@@ -109,6 +127,17 @@ export const DICTS: Record<Lang, Dict> = {
     homeTimeCard: "Right now", homeTalkCard: "Time to talk", homeMeetCard: "Next reunion",
     homeMemCard: "Memories", homeMilestoneCard: "Milestones",
     language: "Language",
+    rolePick: "Which side are you?", roleNote: "Saved on this device — you'll only be asked once.",
+    momentTeaser2: "Capture the same 'now' under skies 13 hours apart.",
+    momentUnlocked: "Today's moments are complete!",
+    momentYours: "Your shot", momentTheirs: "Their shot",
+    momentAddYours: "You haven't taken today's shot yet",
+    momentWaiting: "Waiting for their shot…",
+    momentLocked: "Unlocks when you add your shot for today",
+    momentDone: "Done for today", momentUploadBtn: "📸 Capture this moment",
+    momentRule: "One photo a day. Both photos reveal together (days follow Tokyo time).",
+    refresh: "Refresh",
+    mapDistance: "Distance between you", mapNote: "The dashed line is the shortest route (great circle). Darker areas are in night right now.",
   },
   es: {
     locale: "es-CL",
@@ -147,5 +176,16 @@ export const DICTS: Record<Lang, Dict> = {
     homeTimeCard: "Ahora mismo", homeTalkCard: "Hora de hablar", homeMeetCard: "Próximo reencuentro",
     homeMemCard: "Recuerdos", homeMilestoneCard: "Hitos",
     language: "Idioma",
+    rolePick: "¿De qué lado estás?", roleNote: "Se guarda en este dispositivo — solo se pregunta una vez.",
+    momentTeaser2: "Capturar el mismo 'ahora' bajo cielos separados por 13 horas.",
+    momentUnlocked: "¡Los momentos de hoy están completos!",
+    momentYours: "Tu foto", momentTheirs: "Su foto",
+    momentAddYours: "Aún no tomas la foto de hoy",
+    momentWaiting: "Esperando su foto…",
+    momentLocked: "Se revela cuando agregues tu foto de hoy",
+    momentDone: "Listo por hoy", momentUploadBtn: "📸 Capturar este momento",
+    momentRule: "Una foto al día. Ambas se revelan juntas (los días siguen la hora de Tokio).",
+    refresh: "Actualizar",
+    mapDistance: "Distancia entre ustedes", mapNote: "La línea punteada es la ruta más corta (círculo máximo). Las zonas oscuras están de noche ahora.",
   },
 };

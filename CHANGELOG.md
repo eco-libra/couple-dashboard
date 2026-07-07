@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0] — 2026-07-07
+### Added
+- **Same Moment (v1.1 MVP)**: each partner takes one photo of "right now"
+  per day; the pair reveals only when both sides have uploaded. Day boundary
+  follows Tokyo time. Implemented without a backend using Cloudinary tags
+  (`m-<day>-<role>`); per-device role picker (Tokyo/Santiago side).
+- **Live Map (v1.1)**: canvas world map (Natural Earth 110m land) with both
+  cities, great-circle route, live day/night terminator, distance (~17,242 km),
+  and both sky cards. Geo math unit-tested (4 tests, 19 total).
+### Changed
+- Supabase backend deferred to v1.2+ (needed for notifications/streaks/
+  realtime); Same Moment MVP ships without accounts.
+
 ## [0.5.0] — 2026-07-07
 ### Changed
 - Full architecture migration: single-file `index.html` → Vite + React +

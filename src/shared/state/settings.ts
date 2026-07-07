@@ -13,6 +13,8 @@ export interface Settings {
   start: string;
   annivs: Anniversary[];
   lang: Lang;
+  /** Which side this device belongs to (per-device, not shared): Tokyo=A, Santiago=B. */
+  role: "A" | "B" | "";
 }
 
 const LS_KEY = "futari-dash-v1";
@@ -20,7 +22,7 @@ const LS_KEY = "futari-dash-v1";
 const DEFAULTS: Settings = {
   wakeA: "07:00", sleepA: "23:30",
   wakeB: "07:00", sleepB: "23:30",
-  meet: "", start: "", annivs: [], lang: "ja",
+  meet: "", start: "", annivs: [], lang: "ja", role: "",
 };
 
 function load(): Settings {

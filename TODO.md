@@ -20,12 +20,16 @@
 - [ ] Install test on iPhone Safari and Xiaomi Chrome (user to confirm)
 - [x] v0 preserved at `legacy/v0.html`
 
-## Phase 2 — v1.1 Same Moment + Map
-- [ ] Supabase project: auth (magic link), `couples`, `moments` tables, RLS
-- [ ] Pairing flow: one partner invites via link, both devices linked
-- [ ] Same Moment MVP: upload → lock → unlock when both uploaded
-- [ ] Migrate settings sync from URL-hash to backend (keep hash as fallback)
-- [ ] Live Map v1 (static SVG world map, avatars, distance, terminator)
+## Phase 2 — v1.1 Same Moment + Map ✅ (shipped, backend-free)
+- [x] Same Moment MVP: upload → lock → unlock when both uploaded
+      (Cloudinary tags `m-<day>-<role>`, day = Tokyo date, role picker per device)
+- [x] Live Map v1: canvas world map, avatars, great-circle route,
+      day/night terminator, distance
+- Decision: Supabase deferred until notifications/streak/realtime (v1.2+):
+  - [ ] Supabase project: auth (magic link), `couples`, `moments` tables, RLS
+  - [ ] Pairing flow: one partner invites via link, both devices linked
+  - [ ] Migrate settings sync from URL-hash to backend (keep hash as fallback)
+  - [ ] Same Moment: notifications + streak (needs backend)
 
 ## Later
 - [ ] Exchange rate + holidays (v1.2)
