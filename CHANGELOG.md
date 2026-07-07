@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.1] — 2026-07-08
+### Changed
+- Moment feed redesign: newest-first vertical timeline; full-bleed square
+  media cards with glass time/city pills overlaid on the photo; photo-less
+  hours collapse to one thin line with 😴 sleep markers; camera FAB above
+  the bottom nav replaces the top button card.
+### Added
+- Short-video moments: image/video uploads (25MB cap) — clips autoplay
+  muted and loop in the feed.
+- Notification fixes: SW-based delivery (required on iOS PWA), clearer
+  unsupported/denied guidance, test-notification button in More.
+
 ## [0.7.0] — 2026-07-07
 ### Changed
 - **Same Moment redesign — hourly timeline.** Photos now file into hour
