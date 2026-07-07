@@ -1,9 +1,10 @@
 # TODO
 
-## Phase 0 — Hygiene (before any refactor)
-- [ ] `git init` + first commit of current v0 (this folder is not a repo yet)
-- [ ] Move project out of `~/Downloads` to a real workspace (e.g. `~/dev/couple-dashboard`)
-- [ ] Create GitHub repo, connect Vercel to it (deploy on push)
+## Phase 0 — Hygiene (before any refactor) ✅
+- [x] `git init` + first commit of current v0
+- [x] Move project to `~/dev/couple-dashboard`
+- [x] Private GitHub repo: https://github.com/eco-libra/couple-dashboard
+- [x] Vercel connected to the repo (push to main = production deploy)
 
 ## Phase 1 — v0.5 Foundation
 - [ ] Scaffold Vite + React + TypeScript
