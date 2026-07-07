@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0] — 2026-07-07
+### Changed
+- **Same Moment redesign — hourly timeline.** Photos now file into hour
+  buckets by the instant they were taken (Tokyo-hour based, so Tokyo 20時台
+  = Santiago 07時台 is one shared slot). An hour slider (0–23, dual label
+  🗼20:00 ／ 🏔️07:00) browses the day; empty slots stay open; hours where a
+  side is asleep (per wake/sleep settings) show 😴. Photos are visible
+  immediately — the both-sides unlock was dropped for hourly cadence
+  (friction; may return as a daily-special with streaks).
+- Each photo is captioned in its own city's local time (JST for Tokyo shots,
+  CLT/CLST for Santiago shots).
+### Added
+- Hourly notification "今の瞬間を共有しませんか？📸" at the top of each hour,
+  auto-silenced during the user's own sleep window; per-device on/off in
+  More. Fires while the app is open/backgrounded — closed-app push needs the
+  future backend. 6 new unit tests (25 total).
+
 ## [0.6.0] — 2026-07-07
 ### Added
 - **Same Moment (v1.1 MVP)**: each partner takes one photo of "right now"

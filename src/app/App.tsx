@@ -10,11 +10,13 @@ import { MemoriesPage } from "../features/memories/MemoriesPage";
 import { MilestonesPage } from "../features/milestones/MilestonesPage";
 import { MorePage } from "../features/more/MorePage";
 import { SameMomentPage } from "../features/same-moment/SameMomentPage";
+import { useHourlyNudge } from "../features/same-moment/useHourlyNudge";
 import { MapPage } from "../features/map/MapPage";
 
 export function App() {
   const t = useT();
   const { lang } = useSettings();
+  useHourlyNudge();
 
   useEffect(() => {
     document.documentElement.lang = lang;

@@ -2,11 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
-import { TZ_A, TZ_B, zoneClock, skyPhase } from "../../shared/time/tz";
+import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listImagesByTag, imageUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
-import { momentDayKey, momentTag } from "./moment";
-
-const PHASE_EMOJI = { morning: "🌅", day: "☀️", evening: "🌇", night: "🌙" } as const;
+import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour } from "./moment";
 
 function RolePicker() {
   const t = useT();
@@ -22,28 +20,28 @@ function RolePicker() {
   );
 }
 
-function MomentSlot({ item, tz, name, locked, waitingText }: {
-  item: MediaItem | null; tz: string; name: string;
-  locked: boolean; waitingText: string;
+function HourSlot({ item, tz, name, asleep }: {
+  item: MediaItem | null; tz: string; name: string; asleep: boolean;
 }) {
   const t = useT();
-  const now = useNow(60000);
-  const clock = zoneClock(tz, now);
-  const emoji = PHASE_EMOJI[skyPhase(clock.hour)];
-  const takenAt = item ? new Date(item.version * 1000) : null;
-  const timeLabel = takenAt
-    ? new Intl.DateTimeFormat(t.locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(takenAt)
+  // Each photo is captioned in its own city's local time — that's the point
+  // of a cross-hemisphere couple: same instant, different clocks.
+  const timeLabel = item
+    ? new Intl.DateTimeFormat(t.locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" })
+        .format(new Date(item.version * 1000))
     : "";
 
   return (
     <div className="card" style={{ padding: 12 }}>
-      <p className="label">{emoji} {name}</p>
+      <p className="label">{name}</p>
       <div className="memory-box" style={{ minHeight: 140, cursor: "default" }}>
-        {!item && <div className="mem-empty">{waitingText}</div>}
-        {item && locked && <div className="mem-empty">🔒 {t.momentLocked}</div>}
-        {item && !locked && <img src={imageUrl(item, 700)} alt="" />}
+        {item
+          ? <img src={imageUrl(item, 700)} alt="" />
+          : <div className="mem-empty" style={{ fontSize: asleep ? "2rem" : undefined }}>
+              {asleep ? "😴" : t.momentEmptyHour}
+            </div>}
       </div>
-      {item && !locked && <p className="muted" style={{ marginTop: 6 }}>{timeLabel}</p>}
+      {item && <p className="muted" style={{ marginTop: 6 }}>🕐 {timeLabel}</p>}
     </div>
   );
 }
@@ -52,25 +50,25 @@ export function SameMomentPage() {
   const t = useT();
   const s = useSettings();
   const now = useNow(60000);
-  const [mine, setMine] = useState<MediaItem | null>(null);
-  const [theirs, setTheirs] = useState<MediaItem | null>(null);
+  const [photosA, setPhotosA] = useState<Map<number, MediaItem>>(new Map());
+  const [photosB, setPhotosB] = useState<Map<number, MediaItem>>(new Map());
+  const [hour, setHour] = useState(() => zoneClock(TZ_A, new Date()).hour);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const dayKey = momentDayKey(now);
   const role = s.role;
-  const otherRole = role === "A" ? "B" : "A";
+  const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
 
   const reload = useCallback(async () => {
-    if (!role) return;
-    const [my, other] = await Promise.all([
-      listImagesByTag(momentTag(dayKey, role)),
-      listImagesByTag(momentTag(dayKey, otherRole)),
+    const [a, b] = await Promise.all([
+      listImagesByTag(momentTag(dayKey, "A")),
+      listImagesByTag(momentTag(dayKey, "B")),
     ]);
-    setMine(my[0] ?? null);
-    setTheirs(other[0] ?? null);
-  }, [role, otherRole, dayKey]);
+    setPhotosA(bucketByTokyoHour(a));
+    setPhotosB(bucketByTokyoHour(b));
+  }, [dayKey]);
 
   useEffect(() => { reload(); }, [reload]);
 
@@ -83,12 +81,6 @@ export function SameMomentPage() {
     );
   }
 
-  const unlocked = !!mine && !!theirs;
-  const myCity = role === "A" ? t.tokyo : t.santiago;
-  const otherCity = role === "A" ? t.santiago : t.tokyo;
-  const myTz = role === "A" ? TZ_A : TZ_B;
-  const otherTz = role === "A" ? TZ_B : TZ_A;
-
   const onFile = async (files: FileList | null) => {
     if (!files?.length) return;
     setBusy(true);
@@ -96,39 +88,52 @@ export function SameMomentPage() {
     const ok = await uploadMedia([files[0]], undefined, [momentTag(dayKey, role)]);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
+    if (ok) setHour(zoneClock(TZ_A, new Date()).hour);
     setTimeout(() => setMsg(""), 3000);
     setTimeout(reload, 2500); // CDN list cache lags briefly
   };
+
+  const chileHM = fmtHM(mod1440(hour * 60 - diffBA));
+  const asleepA = asleepAtTokyoHour(hour, s.wakeA, s.sleepA, 0);
+  const asleepB = asleepAtTokyoHour(hour, s.wakeB, s.sleepB, diffBA);
+  const dayLabel = new Intl.DateTimeFormat(t.locale, {
+    timeZone: TZ_A, month: "long", day: "numeric", weekday: "short",
+  }).format(now);
 
   return (
     <main className="page">
       <h1 className="page-title">📸 {t.navMoment}</h1>
       <p className="page-sub">{t.momentTeaser2}</p>
 
-      {unlocked && (
-        <section className="card" style={{ borderColor: "var(--akane)" }}>
-          <p style={{ margin: 0, color: "var(--akane-ink)", fontWeight: 600 }}>💞 {t.momentUnlocked}</p>
-        </section>
-      )}
+      <section className="card">
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <p className="label" style={{ margin: 0 }}>{dayLabel}</p>
+          <p className="label" style={{ margin: 0, fontVariantNumeric: "tabular-nums" }}>
+            🗼 {String(hour).padStart(2, "0")}:00 ／ 🏔️ {chileHM}
+          </p>
+        </div>
+        <input type="range" min={0} max={23} value={hour} style={{ width: "100%", padding: 0, marginTop: 10 }}
+          onChange={e => setHour(+e.target.value)}
+          aria-label={t.momentHourSlider} />
+        <div className="tl-hours" style={{ position: "static", marginTop: 2 }}>
+          {[0, 6, 12, 18, 23].map(h => <span key={h}>{h}</span>)}
+        </div>
+      </section>
 
       <div className="grid2">
-        <MomentSlot item={mine} tz={myTz} name={`${myCity} — ${t.momentYours}`}
-          locked={false}
-          waitingText={t.momentAddYours} />
-        <MomentSlot item={theirs} tz={otherTz} name={`${otherCity} — ${t.momentTheirs}`}
-          locked={!!theirs && !unlocked}
-          waitingText={t.momentWaiting} />
+        <HourSlot item={photosA.get(hour) ?? null} tz={TZ_A}
+          name={`🗼 ${t.tokyo}${role === "A" ? ` — ${t.momentYours}` : ""}`} asleep={asleepA} />
+        <HourSlot item={photosB.get(hour) ?? null} tz={TZ_B}
+          name={`🏔️ ${t.santiago}${role === "B" ? ` — ${t.momentYours}` : ""}`} asleep={asleepB} />
       </div>
 
       <section className="card">
         <div className="row">
-          <button disabled={busy || !!mine} onClick={() => fileRef.current?.click()}>
-            {mine ? `✓ ${t.momentDone}` : t.momentUploadBtn}
-          </button>
+          <button disabled={busy} onClick={() => fileRef.current?.click()}>{t.momentUploadBtn}</button>
           <button disabled={busy} onClick={reload}>🔄 {t.refresh}</button>
           <span className="muted">{msg}</span>
         </div>
-        <p className="muted" style={{ marginTop: 8 }}>{t.momentRule}</p>
+        <p className="muted" style={{ marginTop: 8 }}>{t.momentRuleHourly}</p>
         <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden
           onChange={e => { onFile(e.target.files); e.target.value = ""; }} />
       </section>

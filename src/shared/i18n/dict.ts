@@ -36,6 +36,10 @@ export interface Dict {
   momentDone: string; momentUploadBtn: string; momentRule: string;
   refresh: string;
   mapDistance: string; mapNote: string;
+  momentEmptyHour: string; momentHourSlider: string; momentRuleHourly: string;
+  nudgeTitle: string; nudgeBody: string;
+  notifLabel: string; notifEnable: string; notifEnabled: string;
+  notifDenied: string; notifNote: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -89,6 +93,15 @@ export const DICTS: Record<Lang, Dict> = {
     momentRule: "1日1枚。二人とも追加すると、同時に公開されます（日付は東京時間基準）。",
     refresh: "更新",
     mapDistance: "二人の距離", mapNote: "点線は最短ルート（大圏コース）。暗い部分は今ちょうど夜のところ。",
+    momentEmptyHour: "この時間の写真はまだありません",
+    momentHourSlider: "時間帯を選ぶ",
+    momentRuleHourly: "写真は撮った時間帯（例: 10:00〜10:59 → 10時台）に自動で入ります。いつ何枚撮ってもOK。各写真の時刻はその街の現地時間です。",
+    nudgeTitle: "ふたりの時間",
+    nudgeBody: "今の瞬間を共有しませんか？📸",
+    notifLabel: "毎時のお知らせ",
+    notifEnable: "🔔 通知をオンにする", notifEnabled: "🔔 オン（毎時0分・睡眠時間は自動でお休み）",
+    notifDenied: "ブラウザで通知がブロックされています。サイト設定から許可してください。",
+    notifNote: "アプリを開いている間（またはバックグラウンド時）に毎時0分に通知します。あなたの就寝〜起床の間は鳴りません。",
   },
   en: {
     locale: "en-US",
@@ -138,6 +151,15 @@ export const DICTS: Record<Lang, Dict> = {
     momentRule: "One photo a day. Both photos reveal together (days follow Tokyo time).",
     refresh: "Refresh",
     mapDistance: "Distance between you", mapNote: "The dashed line is the shortest route (great circle). Darker areas are in night right now.",
+    momentEmptyHour: "No photo for this hour yet",
+    momentHourSlider: "Pick an hour",
+    momentRuleHourly: "Photos file into the hour they were taken (10:00–10:59 → the 10 o'clock slot). Shoot any time, as often as you like. Each photo shows its own city's local time.",
+    nudgeTitle: "Our Hours",
+    nudgeBody: "Share this moment? 📸",
+    notifLabel: "Hourly reminder",
+    notifEnable: "🔔 Turn on notifications", notifEnabled: "🔔 On (every hour, pauses while you sleep)",
+    notifDenied: "Notifications are blocked in your browser. Allow them in site settings.",
+    notifNote: "Rings at the top of each hour while the app is open (or in the background). Stays quiet between your bedtime and wake-up.",
   },
   es: {
     locale: "es-CL",
@@ -187,5 +209,14 @@ export const DICTS: Record<Lang, Dict> = {
     momentRule: "Una foto al día. Ambas se revelan juntas (los días siguen la hora de Tokio).",
     refresh: "Actualizar",
     mapDistance: "Distancia entre ustedes", mapNote: "La línea punteada es la ruta más corta (círculo máximo). Las zonas oscuras están de noche ahora.",
+    momentEmptyHour: "Aún no hay foto en esta hora",
+    momentHourSlider: "Elige una hora",
+    momentRuleHourly: "Las fotos entran en la hora en que se tomaron (10:00–10:59 → bloque de las 10). Toma fotos cuando quieras. Cada foto muestra la hora local de su ciudad.",
+    nudgeTitle: "Nuestras Horas",
+    nudgeBody: "¿Compartimos este momento? 📸",
+    notifLabel: "Recordatorio cada hora",
+    notifEnable: "🔔 Activar notificaciones", notifEnabled: "🔔 Activado (cada hora, en pausa mientras duermes)",
+    notifDenied: "Las notificaciones están bloqueadas en tu navegador. Permítelas en la configuración del sitio.",
+    notifNote: "Suena a la hora en punto mientras la app está abierta (o en segundo plano). Guarda silencio entre tu hora de dormir y despertar.",
   },
 };

@@ -15,6 +15,8 @@ export interface Settings {
   lang: Lang;
   /** Which side this device belongs to (per-device, not shared): Tokyo=A, Santiago=B. */
   role: "A" | "B" | "";
+  /** Hourly "share this moment" notification (per-device). */
+  notif: boolean;
 }
 
 const LS_KEY = "futari-dash-v1";
@@ -22,7 +24,7 @@ const LS_KEY = "futari-dash-v1";
 const DEFAULTS: Settings = {
   wakeA: "07:00", sleepA: "23:30",
   wakeB: "07:00", sleepB: "23:30",
-  meet: "", start: "", annivs: [], lang: "ja", role: "",
+  meet: "", start: "", annivs: [], lang: "ja", role: "", notif: false,
 };
 
 function load(): Settings {

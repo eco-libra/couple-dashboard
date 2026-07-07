@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
 import { useSettings, updateSettings, encodeShare } from "../../shared/state/settings";
+import { enableNotifications, notifStatus } from "../same-moment/useHourlyNudge";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -49,6 +50,23 @@ export function MorePage() {
           <span>{t.sleepLabel}</span>{timeField("sleepB")}
         </div>
         <p className="muted" style={{ marginTop: 10 }}>{t.settingsNote}</p>
+      </section>
+
+      <section className="card">
+        <p className="label">{t.notifLabel}</p>
+        {s.notif && notifStatus() === "granted" ? (
+          <div className="row">
+            <span>{t.notifEnabled}</span>
+            <button onClick={() => updateSettings({ notif: false })}>OFF</button>
+          </div>
+        ) : (
+          <button onClick={async () => {
+            const ok = await enableNotifications();
+            if (ok) updateSettings({ notif: true });
+            else alert(t.notifDenied);
+          }}>{t.notifEnable}</button>
+        )}
+        <p className="muted" style={{ marginTop: 8 }}>{t.notifNote}</p>
       </section>
 
       <section className="card">
