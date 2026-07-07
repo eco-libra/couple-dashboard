@@ -32,6 +32,11 @@ export function listImagesByTag(tag: string): Promise<MediaItem[]> {
   return listTag(tag, "image");
 }
 
+export async function listMediaByTag(tag: string): Promise<MediaItem[]> {
+  const [img, vid] = await Promise.all([listTag(tag, "image"), listTag(tag, "video")]);
+  return [...img, ...vid];
+}
+
 export function imageUrl(m: MediaItem, width = 900): string {
   return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_${width}/v${m.version}/${m.public_id}.${m.format}`;
 }

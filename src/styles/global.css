@@ -164,23 +164,48 @@ button { cursor: pointer }
 
 /* ---- same-moment feed ---- */
 .feed { display: flex; flex-direction: column; gap: 10px }
-.feed-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px }
-.feed-slot { display: flex; flex-direction: column; gap: 6px; min-width: 0 }
-.feed-slot-head { display: flex; align-items: center; gap: 8px }
-.feed-chip { width: 14px; height: 14px; border-radius: 4px; flex: none; border: 1px solid rgba(255,255,255,.25) }
-.feed-time {
-  font-family: var(--font-display);
-  font-size: 1.35rem; font-weight: 600; letter-spacing: .02em;
-  font-variant-numeric: tabular-nums; white-space: nowrap;
+.feed-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px }
+.feed-photo {
+  position: relative; aspect-ratio: 1; border-radius: 14px; overflow: hidden;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--line);
+  box-shadow: 0 8px 24px rgba(0,0,10,.3);
 }
-.feed-photo { min-height: 120px }
-.feed-photo img { max-height: 300px }
+.feed-photo img, .feed-photo video {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.feed-empty {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: var(--ink-soft);
+}
+.feed-pill {
+  position: absolute; padding: 3px 10px; border-radius: 999px;
+  background: rgba(10, 12, 30, .55);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.14);
+  font-variant-numeric: tabular-nums; line-height: 1.4;
+}
+.feed-pill-city { top: 8px; left: 8px; font-size: .85rem; padding: 3px 8px }
+.feed-pill-time {
+  bottom: 8px; left: 8px;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: .03em;
+}
 .feed-compact {
   display: flex; justify-content: space-between; gap: 10px;
   padding: 5px 10px; color: var(--ink-soft); font-size: .8rem;
   border-bottom: 1px dashed var(--line);
   font-variant-numeric: tabular-nums;
 }
+.ghost-btn { background: transparent; border: none; padding: 6px; font-size: 1.1rem }
+.fab {
+  position: fixed; right: 18px;
+  bottom: calc(var(--nav-h) + 18px + env(safe-area-inset-bottom));
+  width: 58px; height: 58px; border-radius: 50%; border: none;
+  background: linear-gradient(135deg, #E58089, #C05A6E);
+  font-size: 1.5rem; padding: 0; z-index: 9;
+  box-shadow: 0 6px 20px rgba(229, 128, 137, .45);
+}
+.fab:disabled { opacity: .6 }
 
 /* ---- anniversaries ---- */
 .anniv-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column }

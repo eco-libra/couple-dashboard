@@ -41,6 +41,7 @@ export interface Dict {
   notifLabel: string; notifEnable: string; notifEnabled: string;
   notifDenied: string; notifNote: string;
   notifUnsupported: string; notifTest: string;
+  memTooBig: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -96,7 +97,7 @@ export const DICTS: Record<Lang, Dict> = {
     mapDistance: "二人の距離", mapNote: "点線は最短ルート（大圏コース）。暗い部分は今ちょうど夜のところ。",
     momentEmptyHour: "この時間の写真はまだありません",
     momentHourSlider: "時間帯を選ぶ",
-    momentRuleHourly: "写真は撮った時間帯（例: 10:00〜10:59 → 10時台）に自動で入ります。いつ何枚撮ってもOK。各写真の時刻はその街の現地時間です。",
+    momentRuleHourly: "写真も短い動画もOK。撮った時間帯（例: 10:00〜10:59 → 10時台）に自動で入ります。各時刻はその街の現地時間です。",
     nudgeTitle: "ふたりの時間",
     nudgeBody: "今の瞬間を共有しませんか？📸",
     notifLabel: "毎時のお知らせ",
@@ -105,6 +106,7 @@ export const DICTS: Record<Lang, Dict> = {
     notifNote: "アプリを開いている間（またはバックグラウンド時）に毎時0分に通知します。あなたの就寝〜起床の間は鳴りません。",
     notifUnsupported: "このブラウザでは通知が使えません。iPhoneの場合は、共有ボタン →「ホーム画面に追加」でアプリとして開いてからオンにしてください。",
     notifTest: "テスト通知",
+    memTooBig: "ファイルが大きすぎます（25MBまで。動画は数秒の短いものにしてください）",
   },
   en: {
     locale: "en-US",
@@ -156,7 +158,7 @@ export const DICTS: Record<Lang, Dict> = {
     mapDistance: "Distance between you", mapNote: "The dashed line is the shortest route (great circle). Darker areas are in night right now.",
     momentEmptyHour: "No photo for this hour yet",
     momentHourSlider: "Pick an hour",
-    momentRuleHourly: "Photos file into the hour they were taken (10:00–10:59 → the 10 o'clock slot). Shoot any time, as often as you like. Each photo shows its own city's local time.",
+    momentRuleHourly: "Photos and short videos both work. They file into the hour they were taken (10:00–10:59 → the 10 o'clock slot). Times are each city's local time.",
     nudgeTitle: "Our Hours",
     nudgeBody: "Share this moment? 📸",
     notifLabel: "Hourly reminder",
@@ -165,6 +167,7 @@ export const DICTS: Record<Lang, Dict> = {
     notifNote: "Rings at the top of each hour while the app is open (or in the background). Stays quiet between your bedtime and wake-up.",
     notifUnsupported: "Notifications aren't available in this browser. On iPhone, use Share → 'Add to Home Screen' and open the app from there first.",
     notifTest: "Test notification",
+    memTooBig: "File is too big (25MB max — keep videos to a few seconds)",
   },
   es: {
     locale: "es-CL",
@@ -216,7 +219,7 @@ export const DICTS: Record<Lang, Dict> = {
     mapDistance: "Distancia entre ustedes", mapNote: "La línea punteada es la ruta más corta (círculo máximo). Las zonas oscuras están de noche ahora.",
     momentEmptyHour: "Aún no hay foto en esta hora",
     momentHourSlider: "Elige una hora",
-    momentRuleHourly: "Las fotos entran en la hora en que se tomaron (10:00–10:59 → bloque de las 10). Toma fotos cuando quieras. Cada foto muestra la hora local de su ciudad.",
+    momentRuleHourly: "Sirven fotos y videos cortos. Entran en la hora en que se tomaron (10:00–10:59 → bloque de las 10). Las horas son la hora local de cada ciudad.",
     nudgeTitle: "Nuestras Horas",
     nudgeBody: "¿Compartimos este momento? 📸",
     notifLabel: "Recordatorio cada hora",
@@ -225,5 +228,6 @@ export const DICTS: Record<Lang, Dict> = {
     notifNote: "Suena a la hora en punto mientras la app está abierta (o en segundo plano). Guarda silencio entre tu hora de dormir y despertar.",
     notifUnsupported: "Las notificaciones no están disponibles en este navegador. En iPhone, usa Compartir → 'Añadir a pantalla de inicio' y abre la app desde ahí.",
     notifTest: "Notificación de prueba",
+    memTooBig: "El archivo es demasiado grande (máx. 25MB — videos de pocos segundos)",
   },
 };

@@ -2,16 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
-import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440, skyPhase } from "../../shared/time/tz";
-import { listImagesByTag, imageUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
+import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
+import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour } from "./moment";
 
-const SKY_CHIP: Record<string, string> = {
-  night: "linear-gradient(135deg,#1B2140,#2E3560)",
-  morning: "linear-gradient(135deg,#F4C48F,#FCE9D4)",
-  day: "linear-gradient(135deg,#BFDCEB,#E8F2F7)",
-  evening: "linear-gradient(135deg,#E89A7A,#F5D0B5)",
-};
+const MAX_BYTES = 25 * 1024 * 1024;
 
 function RolePicker() {
   const t = useT();
@@ -27,34 +22,28 @@ function RolePicker() {
   );
 }
 
-/** One side of an hour row: big local time + photo (or asleep/empty state). */
+/** One side of an hour row: full-bleed square media with overlaid time pill. */
 function FeedSlot({ item, tz, emoji, hourLocalHM, asleep }: {
   item: MediaItem | null; tz: string; emoji: string;
   hourLocalHM: string; asleep: boolean;
 }) {
   const t = useT();
-  const takenAt = item ? new Date(item.version * 1000) : null;
-  const exact = takenAt
-    ? new Intl.DateTimeFormat(t.locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(takenAt)
+  const exact = item
+    ? new Intl.DateTimeFormat(t.locale, { timeZone: tz, hour: "2-digit", minute: "2-digit" })
+        .format(new Date(item.version * 1000))
     : null;
-  const localHour = takenAt
-    ? +new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", hour12: false }).format(takenAt) % 24
-    : +hourLocalHM.slice(0, 2);
-  const chip = SKY_CHIP[skyPhase(localHour)];
 
   return (
-    <div className="feed-slot">
-      <div className="feed-slot-head">
-        <span className="feed-chip" style={{ background: chip }} aria-hidden />
-        <span className="feed-time">{emoji} {exact ?? hourLocalHM}</span>
-      </div>
-      <div className="memory-box feed-photo">
-        {item
-          ? <img src={imageUrl(item, 700)} alt="" loading="lazy" />
-          : <div className="mem-empty" style={asleep ? { fontSize: "1.8rem" } : undefined}>
-              {asleep ? "😴" : "—"}
-            </div>}
-      </div>
+    <div className="feed-photo">
+      {item?.rtype === "image" && <img src={imageUrl(item, 700)} alt="" loading="lazy" />}
+      {item?.rtype === "video" && (
+        <video src={videoUrl(item)} muted autoPlay loop playsInline preload="metadata" />
+      )}
+      {!item && (
+        <div className="feed-empty">{asleep ? "😴" : "·"}</div>
+      )}
+      <span className="feed-pill feed-pill-city">{emoji}</span>
+      <span className="feed-pill feed-pill-time">{exact ?? hourLocalHM}</span>
     </div>
   );
 }
@@ -76,8 +65,8 @@ export function SameMomentPage() {
 
   const reload = useCallback(async () => {
     const [a, b] = await Promise.all([
-      listImagesByTag(momentTag(dayKey, "A")),
-      listImagesByTag(momentTag(dayKey, "B")),
+      listMediaByTag(momentTag(dayKey, "A")),
+      listMediaByTag(momentTag(dayKey, "B")),
     ]);
     setPhotosA(bucketByTokyoHour(a));
     setPhotosB(bucketByTokyoHour(b));
@@ -96,9 +85,11 @@ export function SameMomentPage() {
 
   const onFile = async (files: FileList | null) => {
     if (!files?.length) return;
+    const f = files[0];
+    if (f.size > MAX_BYTES) { setMsg(t.memTooBig); setTimeout(() => setMsg(""), 4000); return; }
     setBusy(true);
     setMsg(t.memUploading);
-    const ok = await uploadMedia([files[0]], undefined, [momentTag(dayKey, role)]);
+    const ok = await uploadMedia([f], undefined, [momentTag(dayKey, role)]);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
@@ -109,24 +100,16 @@ export function SameMomentPage() {
     timeZone: TZ_A, month: "long", day: "numeric", weekday: "short",
   }).format(now);
 
-  // Today's hours, newest first. Hours with a photo render full rows;
-  // photo-less hours collapse into one thin line each.
   const hours = Array.from({ length: currentHour + 1 }, (_, i) => currentHour - i);
 
   return (
     <main className="page">
-      <h1 className="page-title">📸 {t.navMoment}</h1>
-      <p className="page-sub">{t.momentTeaser2} — {dayLabel}</p>
-
-      <section className="card">
-        <div className="row">
-          <button disabled={busy} onClick={() => fileRef.current?.click()}>{t.momentUploadBtn}</button>
-          <button disabled={busy} onClick={reload}>🔄 {t.refresh}</button>
-          <span className="muted">{msg}</span>
-        </div>
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" hidden
-          onChange={e => { onFile(e.target.files); e.target.value = ""; }} />
-      </section>
+      <div className="row" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+        <h1 className="page-title">📸 {t.navMoment}</h1>
+        <button className="ghost-btn" disabled={busy} onClick={reload} aria-label={t.refresh}>🔄</button>
+      </div>
+      <p className="page-sub" style={{ marginTop: -12 }}>{dayLabel} — {t.momentTeaser2}</p>
+      {msg && <p className="muted" style={{ margin: 0 }}>{msg}</p>}
 
       <section className="feed">
         {hours.map(h => {
@@ -146,7 +129,7 @@ export function SameMomentPage() {
             );
           }
           return (
-            <div key={h} className="feed-row card">
+            <div key={h} className="feed-row">
               <FeedSlot item={a} tz={TZ_A} emoji="🗼" hourLocalHM={tokyoHM} asleep={asleepA} />
               <FeedSlot item={b} tz={TZ_B} emoji="🏔️" hourLocalHM={chileHM} asleep={asleepB} />
             </div>
@@ -155,6 +138,11 @@ export function SameMomentPage() {
       </section>
 
       <p className="muted">{t.momentRuleHourly}</p>
+
+      <button className="fab" disabled={busy} onClick={() => fileRef.current?.click()}
+        aria-label={t.momentUploadBtn}>📸</button>
+      <input ref={fileRef} type="file" accept="image/*,video/*" hidden
+        onChange={e => { onFile(e.target.files); e.target.value = ""; }} />
     </main>
   );
 }
