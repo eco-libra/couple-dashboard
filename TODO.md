@@ -6,18 +6,19 @@
 - [x] Private GitHub repo: https://github.com/eco-libra/couple-dashboard
 - [x] Vercel connected to the repo (push to main = production deploy)
 
-## Phase 1 — v0.5 Foundation
-- [ ] Scaffold Vite + React + TypeScript
-- [ ] Extract design tokens from v0 CSS into `styles/tokens.css`
-- [ ] Port pure logic to `shared/time` with unit tests (Vitest):
-      offset math, overlap segments, next-anniversary, day-boundary cases
-- [ ] Port i18n dictionaries to `shared/i18n`
-- [ ] Build app shell: router + bottom nav (Home / Same Moment / Map / Memories / More)
-- [ ] Port v0 features into `features/*` pages, keeping current visual design
-- [ ] Home = summary cards (time, countdown, next talk window, memories teaser)
-- [ ] PWA: manifest, icons, service worker (vite-plugin-pwa), install test on
-      iPhone Safari and Xiaomi Chrome
-- [ ] Verify feature parity against v0 checklist, then swap Vercel production
+## Phase 1 — v0.5 Foundation ✅ (shipped)
+- [x] Scaffold Vite + React + TypeScript
+- [x] Design tokens + component styles in `src/styles/global.css`
+- [x] `shared/time` pure functions with 15 Vitest tests (DST both seasons,
+      midnight wrap, overlap, anniversaries)
+- [x] i18n dictionaries in `shared/i18n` (ja/en/es)
+- [x] App shell: BrowserRouter + bottom nav (Home / Moment / Map / Memories / More)
+- [x] v0 features ported to `features/*`; ambient photo background kept globally
+- [x] Home = summary cards linking to /clocks, /milestones, /memories
+- [x] PWA: manifest, generated icons, service worker (autoUpdate,
+      runtime cache for Cloudinary media)
+- [ ] Install test on iPhone Safari and Xiaomi Chrome (user to confirm)
+- [x] v0 preserved at `legacy/v0.html`
 
 ## Phase 2 — v1.1 Same Moment + Map
 - [ ] Supabase project: auth (magic link), `couples`, `moments` tables, RLS

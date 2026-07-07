@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0] — 2026-07-07
+### Changed
+- Full architecture migration: single-file `index.html` → Vite + React +
+  TypeScript with feature-first structure (`features/*`, `shared/*`).
+  Feature parity with v0.4; v0 preserved at `legacy/v0.html`.
+- App-like navigation: bottom nav (Home / Moment / Map / Memories / More);
+  Home is now a summary-card dashboard linking to detail pages.
+### Added
+- PWA: installable (manifest + icons), service worker with auto-update and
+  runtime caching of Cloudinary media.
+- 15 unit tests for all time-zone math (DST in both Chilean seasons,
+  midnight-wrapping windows, overlap, anniversaries).
+- Placeholder pages for Same Moment (v1.1) and Live Map (v1.1).
+
 ## [0.4.0] — 2026-07-06
 ### Added
 - Modern UI: full-screen ambient background slideshow of couple photos
