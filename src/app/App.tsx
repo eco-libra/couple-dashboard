@@ -13,6 +13,7 @@ import { SameMomentPage } from "../features/same-moment/SameMomentPage";
 import { useHourlyNudge } from "../features/same-moment/useHourlyNudge";
 import { MapPage } from "../features/map/MapPage";
 import { AiPage } from "../features/ai/AiPage";
+import { QuizPage } from "../features/quiz/QuizPage";
 
 export function App() {
   const t = useT();
@@ -45,6 +46,7 @@ export function App() {
         <Route path="/memories" element={<MemoriesPage />} />
         <Route path="/milestones" element={<MilestonesPage />} />
         <Route path="/ai" element={<AiPage />} />
+        <Route path="/quiz" element={<QuizPage />} />
         <Route path="/more" element={<MorePage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>

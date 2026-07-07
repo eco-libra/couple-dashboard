@@ -37,6 +37,47 @@ export async function listMediaByTag(tag: string): Promise<MediaItem[]> {
   return [...img, ...vid];
 }
 
+// ---- text records (stored as context metadata on a 1x1 placeholder image) ----
+
+const PIXEL =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+// base64url without padding: context values must not contain "=" or "|"
+const encodeText = (s: string) =>
+  btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const decodeText = (s: string) =>
+  decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
+
+export async function uploadTextRecord(tag: string, text: string): Promise<boolean> {
+  const fd = new FormData();
+  fd.append("file", PIXEL);
+  fd.append("upload_preset", PRESET);
+  fd.append("tags", tag);
+  fd.append("context", `a=${encodeText(text)}`);
+  try {
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`, { method: "POST", body: fd });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Latest text record for a tag, or null. */
+export async function fetchTextRecord(tag: string): Promise<string | null> {
+  try {
+    const r = await fetch(`https://res.cloudinary.com/${CLOUD}/image/list/${tag}.json?t=${Math.floor(Date.now() / 60000)}`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const items = (j.resources ?? [])
+      .filter((x: { context?: { custom?: { a?: string } } }) => x.context?.custom?.a)
+      .sort((a: { version: number }, b: { version: number }) => b.version - a.version);
+    if (!items.length) return null;
+    return decodeText(items[0].context.custom.a);
+  } catch {
+    return null;
+  }
+}
+
 export function imageUrl(m: MediaItem, width = 900): string {
   return `https://res.cloudinary.com/${CLOUD}/image/upload/f_auto,q_auto,w_${width}/v${m.version}/${m.public_id}.${m.format}`;
 }

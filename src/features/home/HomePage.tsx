@@ -42,6 +42,11 @@ export function HomePage() {
         </Link>
       </div>
 
+      <Link to="/quiz" className="card">
+        <p className="label">🔮 {t.quizTitle}</p>
+        <p style={{ margin: 0 }} className="muted">{t.quizSub} →</p>
+      </Link>
+
       <Link to="/ai" className="card">
         <p className="label">🪄 {t.aiTitle}</p>
         <p style={{ margin: 0 }} className="muted">{t.aiSub} →</p>

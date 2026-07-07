@@ -48,6 +48,8 @@ export interface Dict {
   aiTransLabel: string; aiPlaceholder: string; aiTranslateBtn: string;
   aiIdeasLabel: string; aiStarterBtn: string; aiDateBtn: string;
   aiCopy: string;
+  quizTitle: string; quizSub: string; quizSubmit: string;
+  quizLockNote: string; quizYourResult: string; quizPartnerResult: string; quizWaiting: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -122,6 +124,11 @@ export const DICTS: Record<Lang, Dict> = {
     aiIdeasLabel: "今夜のアイデア（日西バイリンガル）",
     aiStarterBtn: "💬 会話のきっかけ", aiDateBtn: "🍝 遠距離デート案",
     aiCopy: "両方コピー",
+    quizTitle: "今日の心理テスト", quizSub: "答えると種明かしと相手の答えが見られます",
+    quizSubmit: "回答する",
+    quizLockNote: "🔒 種明かしと相手の答えは、あなたが回答するまで見られません。",
+    quizYourResult: "あなたの答え", quizPartnerResult: "相手の答え",
+    quizWaiting: "相手の回答を待っています…（反映に数分かかることがあります）",
   },
   en: {
     locale: "en-US",
@@ -192,6 +199,11 @@ export const DICTS: Record<Lang, Dict> = {
     aiIdeasLabel: "Ideas for tonight (bilingual)",
     aiStarterBtn: "💬 Conversation starter", aiDateBtn: "🍝 Long-distance date idea",
     aiCopy: "Copy both",
+    quizTitle: "Today's psych test", quizSub: "Answer to unlock the reveal and your partner's answer",
+    quizSubmit: "Answer",
+    quizLockNote: "🔒 The reveal and your partner's answer stay hidden until you answer.",
+    quizYourResult: "Your answer", quizPartnerResult: "Their answer",
+    quizWaiting: "Waiting for their answer… (may take a few minutes to appear)",
   },
   es: {
     locale: "es-CL",
@@ -262,5 +274,10 @@ export const DICTS: Record<Lang, Dict> = {
     aiIdeasLabel: "Ideas para hoy (bilingüe)",
     aiStarterBtn: "💬 Tema de conversación", aiDateBtn: "🍝 Idea de cita a distancia",
     aiCopy: "Copiar ambos",
+    quizTitle: "Test psicológico de hoy", quizSub: "Responde para desbloquear la revelación y la respuesta de tu pareja",
+    quizSubmit: "Responder",
+    quizLockNote: "🔒 La revelación y la respuesta de tu pareja quedan ocultas hasta que respondas.",
+    quizYourResult: "Tu respuesta", quizPartnerResult: "Su respuesta",
+    quizWaiting: "Esperando su respuesta… (puede tardar unos minutos en aparecer)",
   },
 };
