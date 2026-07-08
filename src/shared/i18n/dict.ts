@@ -48,6 +48,7 @@ export interface Dict {
   aiTransLabel: string; aiPlaceholder: string; aiTranslateBtn: string;
   aiIdeasLabel: string; aiStarterBtn: string; aiDateBtn: string;
   aiCopy: string;
+  aiTranslating: string; aiCopy2: string; aiTransFailed: string; aiOpenGoogle: string;
   quizTitle: string; quizSub: string; quizSubmit: string;
   quizLockNote: string; quizYourResult: string; quizPartnerResult: string; quizWaiting: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
@@ -120,10 +121,13 @@ export const DICTS: Record<Lang, Dict> = {
     aiTitle: "翻訳とアイデア", aiSub: "翻訳と、今夜のふたりのアイデア",
     aiTransLabel: "翻訳（日本語 ⇄ スペイン語・自動判別）",
     aiPlaceholder: "送りたいメッセージを入力…",
-    aiTranslateBtn: "Google翻訳で開く ↗",
+    aiTranslateBtn: "翻訳する",
     aiIdeasLabel: "今夜のアイデア（日西バイリンガル）",
     aiStarterBtn: "💬 会話のきっかけ", aiDateBtn: "🍝 遠距離デート案",
     aiCopy: "両方コピー",
+    aiTranslating: "翻訳中…", aiCopy2: "翻訳をコピー",
+    aiTransFailed: "サイト内翻訳が使えませんでした。",
+    aiOpenGoogle: "Google翻訳で開く ↗",
     quizTitle: "今日の心理テスト", quizSub: "答えると種明かしと相手の答えが見られます",
     quizSubmit: "回答する",
     quizLockNote: "🔒 種明かしと相手の答えは、あなたが回答するまで見られません。",
@@ -195,10 +199,13 @@ export const DICTS: Record<Lang, Dict> = {
     aiTitle: "Translate & Ideas", aiSub: "Translation and ideas for tonight",
     aiTransLabel: "Translate (Japanese ⇄ Spanish, auto-detected)",
     aiPlaceholder: "Type the message you want to send…",
-    aiTranslateBtn: "Open in Google Translate ↗",
+    aiTranslateBtn: "Translate",
     aiIdeasLabel: "Ideas for tonight (bilingual)",
     aiStarterBtn: "💬 Conversation starter", aiDateBtn: "🍝 Long-distance date idea",
     aiCopy: "Copy both",
+    aiTranslating: "Translating…", aiCopy2: "Copy translation",
+    aiTransFailed: "In-site translation wasn't available.",
+    aiOpenGoogle: "Open in Google Translate ↗",
     quizTitle: "Today's psych test", quizSub: "Answer to unlock the reveal and your partner's answer",
     quizSubmit: "Answer",
     quizLockNote: "🔒 The reveal and your partner's answer stay hidden until you answer.",
@@ -270,10 +277,13 @@ export const DICTS: Record<Lang, Dict> = {
     aiTitle: "Traducción e ideas", aiSub: "Traducción e ideas para esta noche",
     aiTransLabel: "Traducir (japonés ⇄ español, autodetectado)",
     aiPlaceholder: "Escribe el mensaje que quieres enviar…",
-    aiTranslateBtn: "Abrir en Google Traductor ↗",
+    aiTranslateBtn: "Traducir",
     aiIdeasLabel: "Ideas para hoy (bilingüe)",
     aiStarterBtn: "💬 Tema de conversación", aiDateBtn: "🍝 Idea de cita a distancia",
     aiCopy: "Copiar ambos",
+    aiTranslating: "Traduciendo…", aiCopy2: "Copiar traducción",
+    aiTransFailed: "La traducción en el sitio no estuvo disponible.",
+    aiOpenGoogle: "Abrir en Google Traductor ↗",
     quizTitle: "Test psicológico de hoy", quizSub: "Responde para desbloquear la revelación y la respuesta de tu pareja",
     quizSubmit: "Responder",
     quizLockNote: "🔒 La revelación y la respuesta de tu pareja quedan ocultas hasta que respondas.",
