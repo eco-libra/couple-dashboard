@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { TESTS, testForDay, fillReveal, quizTag } from "./tests";
+import { TESTS, testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
 
 describe("daily psych test", () => {
   it("is deterministic per day key and varies across days", () => {
@@ -25,6 +25,19 @@ describe("daily psych test", () => {
         }
       }
     }
+  });
+
+  it("choice arrays align with fields, and choice answers resolve per language", () => {
+    for (const test of TESTS) {
+      if (!test.choices) continue;
+      expect(test.choices.length, test.id).toBe(test.fields.length);
+    }
+    const animals = TESTS.find(x => x.id === "desert-animals")!;
+    expect(resolveAnswers(animals, ["#0", "#1", "#2", "#3", "#4"], "ja")).toEqual(["虎", "牛", "馬", "羊", "猿"]);
+    expect(resolveAnswers(animals, ["#4"], "es")).toEqual(["Mono"]);
+    // free text passes through untouched
+    const cube = TESTS.find(x => x.id === "cube")!;
+    expect(resolveAnswers(cube, ["大きい", "ガラス", "浮いてる"], "es")).toEqual(["大きい", "ガラス", "浮いてる"]);
   });
 
   it("builds role-scoped tags", () => {

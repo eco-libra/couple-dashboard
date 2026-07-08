@@ -4,7 +4,7 @@ import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
 import { uploadTextRecord, fetchTextRecord } from "../../shared/services/cloudinary";
 import { momentDayKey } from "../same-moment/moment";
-import { testForDay, fillReveal, quizTag } from "./tests";
+import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
 
 const inputStyle: React.CSSProperties = {
   width: "100%", font: "inherit", fontSize: 16,
@@ -103,13 +103,24 @@ export function QuizPage() {
 
         {!mine ? (
           <>
-            {test.fields.map((f, i) => (
-              <div key={i} style={{ marginBottom: 10 }}>
-                <p className="label" style={{ marginBottom: 4 }}>{f[lang]}</p>
-                <input type="text" maxLength={60} value={drafts[i]} style={inputStyle}
-                  onChange={e => setDrafts(d => d.map((v, j) => (j === i ? e.target.value : v)))} />
-              </div>
-            ))}
+            {test.fields.map((f, i) => {
+              const opts = test.choices?.[i];
+              return (
+                <div key={i} style={{ marginBottom: 10 }}>
+                  <p className="label" style={{ marginBottom: 4 }}>{f[lang]}</p>
+                  {opts ? (
+                    <select value={drafts[i]} style={inputStyle}
+                      onChange={e => setDrafts(d => d.map((v, j) => (j === i ? e.target.value : v)))}>
+                      <option value="" disabled>—</option>
+                      {opts.map((o, k) => <option key={k} value={`#${k}`}>{o[lang]}</option>)}
+                    </select>
+                  ) : (
+                    <input type="text" maxLength={60} value={drafts[i]} style={inputStyle}
+                      onChange={e => setDrafts(d => d.map((v, j) => (j === i ? e.target.value : v)))} />
+                  )}
+                </div>
+              );
+            })}
             <div className="row" style={{ marginTop: 12 }}>
               <button disabled={busy || drafts.some(d => !d.trim())} onClick={submit}>
                 {t.quizSubmit}
@@ -122,9 +133,11 @@ export function QuizPage() {
           <>
             <p className="label">{t.quizYourResult}</p>
             <p className="muted" style={{ margin: "0 0 10px" }}>
-              {mine.map((a, i) => `${i + 1}. ${a}`).join("　")}
+              {resolveAnswers(test, mine, lang).map((a, i) => `${i + 1}. ${a}`).join("　")}
             </p>
-            <p style={{ margin: 0, color: "var(--akane-ink)" }}>✨ {fillReveal(test.reveal[lang], mine)}</p>
+            <p style={{ margin: 0, color: "var(--akane-ink)" }}>
+              ✨ {fillReveal(test.reveal[lang], resolveAnswers(test, mine, lang))}
+            </p>
           </>
         )}
       </section>
@@ -135,9 +148,11 @@ export function QuizPage() {
           {theirs ? (
             <>
               <p className="muted" style={{ margin: "0 0 10px" }}>
-                {theirs.map((a, i) => `${i + 1}. ${a}`).join("　")}
+                {resolveAnswers(test, theirs, lang).map((a, i) => `${i + 1}. ${a}`).join("　")}
               </p>
-              <p style={{ margin: 0, color: "var(--akane-ink)" }}>✨ {fillReveal(test.reveal[lang], theirs)}</p>
+              <p style={{ margin: 0, color: "var(--akane-ink)" }}>
+                ✨ {fillReveal(test.reveal[lang], resolveAnswers(test, theirs, lang))}
+              </p>
             </>
           ) : (
             <div className="row">

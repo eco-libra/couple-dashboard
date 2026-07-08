@@ -9,7 +9,18 @@ export interface PsychTest {
   prompt: L;
   fields: L[];   // one input per field
   reveal: L;     // template; {{1}}..{{n}} are replaced with the answers
+  /**
+   * Fixed choices per field (aligned by index; undefined = free text).
+   * Choice answers are stored as "#<index>" so each partner sees them
+   * rendered in their own language.
+   */
+  choices?: (L[] | undefined)[];
 }
+
+const ANIMALS: L[] = [
+  { ja: "虎", es: "Tigre" }, { ja: "牛", es: "Vaca" }, { ja: "馬", es: "Caballo" },
+  { ja: "羊", es: "Oveja" }, { ja: "猿", es: "Mono" },
+];
 
 export const TESTS: PsychTest[] = [
   {
@@ -37,6 +48,7 @@ export const TESTS: PsychTest[] = [
       { ja: "1番目に手放す", es: "1º en soltar" }, { ja: "2番目", es: "2º" },
       { ja: "3番目", es: "3º" }, { ja: "4番目", es: "4º" }, { ja: "最後まで残す", es: "El último" },
     ],
+    choices: [ANIMALS, ANIMALS, ANIMALS, ANIMALS, ANIMALS],
     reveal: {
       ja: "それぞれの動物はこんな意味だと言われています — 虎=プライド、牛=財産、馬=仕事、羊=愛情、猿=子ども・家族。最初に手放した「{{1}}」より、最後まで残した「{{5}}」をあなたは人生で優先するようです。",
       es: "Cada animal significa algo: tigre = orgullo, vaca = bienes, caballo = trabajo, oveja = amor, mono = hijos/familia. Priorizas en la vida lo que guardaste hasta el final («{{5}}») por encima de lo primero que soltaste («{{1}}»).",
@@ -138,6 +150,10 @@ export const TESTS: PsychTest[] = [
       es: "Si viajaras ahora: ¿mar, montaña, río o lago? Responde por instinto.",
     },
     fields: [{ ja: "選んだ場所", es: "Tu elección" }],
+    choices: [[
+      { ja: "海", es: "Mar" }, { ja: "山", es: "Montaña" },
+      { ja: "川", es: "Río" }, { ja: "湖", es: "Lago" },
+    ]],
     reveal: {
       ja: "選んだ場所はいまの恋愛に求めるもの — 海=情熱と開放感、山=尊敬と成長、川=変化と刺激、湖=安定と安心。「{{1}}」を選んだあなたが相手に求めているもの、当たってる？",
       es: "Tu elección revela lo que buscas en el amor: mar = pasión y libertad, montaña = admiración y crecimiento, río = cambio y estímulo, lago = estabilidad y calma. Elegiste «{{1}}»… ¿le achuntó?",
@@ -158,10 +174,14 @@ export const TESTS: PsychTest[] = [
   {
     id: "rain-umbrella",
     prompt: {
-      ja: "突然の雨。あなたは傘を持っていません。どうしますか？（走る、雨宿り、濡れて歩く、買う…）",
-      es: "Lluvia repentina y no tienes paraguas. ¿Qué haces? (correr, refugiarte, caminar mojado/a, comprar uno…)",
+      ja: "突然の雨。あなたは傘を持っていません。どうしますか？",
+      es: "Lluvia repentina y no tienes paraguas. ¿Qué haces?",
     },
     fields: [{ ja: "どうする？", es: "¿Qué haces?" }],
+    choices: [[
+      { ja: "走って帰る", es: "Corro a casa" }, { ja: "雨宿りして待つ", es: "Me refugio y espero" },
+      { ja: "濡れたまま歩く", es: "Camino mojado/a" }, { ja: "傘を買う", es: "Compro un paraguas" },
+    ]],
     reveal: {
       ja: "突然の雨は「予期しないトラブル」の象徴。「{{1}}」は、あなたが恋愛でケンカや問題が起きたときの向き合い方を表すと言われています。",
       es: "La lluvia repentina simboliza los problemas inesperados. «{{1}}» refleja cómo enfrentas las peleas y los problemas en el amor.",
@@ -174,6 +194,11 @@ export const TESTS: PsychTest[] = [
       es: "Si eligieras un plato de huevo: ¿frito, duro, revuelto, omelette…?",
     },
     fields: [{ ja: "選んだ卵料理", es: "Tu elección" }],
+    choices: [[
+      { ja: "目玉焼き", es: "Huevo frito" }, { ja: "ゆで卵", es: "Huevo duro" },
+      { ja: "スクランブル", es: "Huevo revuelto" }, { ja: "オムレツ", es: "Omelette" },
+      { ja: "卵かけごはん", es: "Huevo crudo sobre arroz" },
+    ]],
     reveal: {
       ja: "卵は「恋愛のかたち」の象徴。目玉焼き=シンプルで一途、ゆで卵=時間をかけて温める慎重派、スクランブル=自由で情熱的、オムレツ=尽くすタイプ、卵かけごはん=飾らない自然体。「{{1}}」を選んだあなたは？",
       es: "El huevo simboliza tu forma de amar: frito = simple y fiel, duro = cauteloso que se toma su tiempo, revuelto = libre y apasionado, omelette = entregado/a, crudo sobre arroz = natural y sin adornos. Elegiste «{{1}}»…",
@@ -198,6 +223,11 @@ export const TESTS: PsychTest[] = [
       es: "Llegas a un mar precioso. ¿Hasta dónde entras? (tobillos, cintura, hombros, buceas, no entras)",
     },
     fields: [{ ja: "どこまで入る？", es: "¿Hasta dónde?" }],
+    choices: [[
+      { ja: "足首だけ", es: "Hasta los tobillos" }, { ja: "腰まで", es: "Hasta la cintura" },
+      { ja: "肩まで", es: "Hasta los hombros" }, { ja: "潜る", es: "Buceo" },
+      { ja: "入らない", es: "No entro" },
+    ]],
     reveal: {
       ja: "海は「恋」。どこまで入るかは、恋に落ちたときにどこまで自分を委ねられるかを表すと言われています。「{{1}}」— あなたの恋への飛び込み方です。",
       es: "El mar es el amor. Hasta dónde entras revela cuánto te entregas cuando te enamoras. «{{1}}» — así te lanzas tú al amor.",
@@ -210,6 +240,10 @@ export const TESTS: PsychTest[] = [
       es: "Frente a ti hay 4 puertas: roja, azul, amarilla y verde. ¿Cuál abres?",
     },
     fields: [{ ja: "開けるドア", es: "La puerta" }],
+    choices: [[
+      { ja: "赤いドア", es: "Puerta roja" }, { ja: "青いドア", es: "Puerta azul" },
+      { ja: "黄色いドア", es: "Puerta amarilla" }, { ja: "緑のドア", es: "Puerta verde" },
+    ]],
     reveal: {
       ja: "赤=情熱と行動力、青=誠実さと冷静さ、黄=好奇心と社交性、緑=安定と癒し。「{{1}}」を選んだあなたが、今いちばん必要としているエネルギーです。",
       es: "Roja = pasión y acción, azul = sinceridad y calma, amarilla = curiosidad y sociabilidad, verde = estabilidad y sanación. «{{1}}» es la energía que más necesitas ahora.",
@@ -285,6 +319,10 @@ export const TESTS: PsychTest[] = [
       es: "Un pastel con una frutilla arriba. ¿Cuándo te la comes? (primero, a la mitad, al final, se la das a alguien)",
     },
     fields: [{ ja: "いちごを食べるタイミング", es: "Cuándo te la comes" }],
+    choices: [[
+      { ja: "最初に食べる", es: "Primero" }, { ja: "途中で食べる", es: "A la mitad" },
+      { ja: "最後に食べる", es: "Al final" }, { ja: "誰かにあげる", es: "Se la doy a alguien" },
+    ]],
     reveal: {
       ja: "いちごは「恋のいちばん美味しい瞬間」。最初に食べる人は今を全力で楽しむタイプ、最後の人は幸せを取っておく堅実派、あげる人は尽くし型。「{{1}}」のあなたの恋の進め方、当たってる？",
       es: "La frutilla es el momento más dulce del amor. Primero = vives el presente a full, al final = guardas la felicidad, la regalas = eres de los que se entregan. Tú: «{{1}}». ¿Le achuntó?",
@@ -297,6 +335,10 @@ export const TESTS: PsychTest[] = [
       es: "Miras el cielo nocturno. ¿Qué buscas primero? (la luna, la estrella más brillante, una constelación, una estrella fugaz)",
     },
     fields: [{ ja: "最初に探すもの", es: "Lo que buscas" }],
+    choices: [[
+      { ja: "月", es: "La luna" }, { ja: "一番明るい星", es: "La estrella más brillante" },
+      { ja: "星座", es: "Una constelación" }, { ja: "流れ星", es: "Una estrella fugaz" },
+    ]],
     reveal: {
       ja: "月=そばにある安心した愛、明るい星=憧れの存在への愛、星座=物語のある運命的な愛、流れ星=一瞬の煌めきと情熱。「{{1}}」を探したあなたが求める愛の形です。",
       es: "Luna = amor cercano y seguro, estrella brillante = amor que se admira, constelación = amor de destino con historia, estrella fugaz = pasión e instante. Buscaste «{{1}}»: esa es la forma de amor que anhelas.",
@@ -309,6 +351,10 @@ export const TESTS: PsychTest[] = [
       es: "Ciudad desconocida, sin mapa ni celular. ¿Cómo avanzas? (preguntas, caminas por instinto, buscas un punto alto, sigues a alguien)",
     },
     fields: [{ ja: "どうやって進む？", es: "¿Cómo avanzas?" }],
+    choices: [[
+      { ja: "人に聞く", es: "Pregunto a alguien" }, { ja: "勘で歩く", es: "Camino por instinto" },
+      { ja: "高い場所を探す", es: "Busco un punto alto" }, { ja: "誰かについて行く", es: "Sigo a alguien" },
+    ]],
     reveal: {
       ja: "知らない街は「人生」。「{{1}}」は、あなたが迷ったときの人生の進め方そのものだと言われています。二人の答えが違ったら、いいコンビの証拠。",
       es: "La ciudad desconocida es la vida. «{{1}}» es exactamente cómo avanzas cuando estás perdido/a. Si sus respuestas difieren, son un buen equipo.",
@@ -329,10 +375,14 @@ export const TESTS: PsychTest[] = [
   {
     id: "stopped-clock",
     prompt: {
-      ja: "大事にしていた時計が止まりました。どうしますか？（修理に出す・電池を替える・新しいのを買う・止まったまま飾る）",
-      es: "Tu reloj favorito se detuvo. ¿Qué haces? (lo llevas a reparar, le cambias la pila, compras otro, lo guardas como adorno)",
+      ja: "大事にしていた時計が止まりました。どうしますか？",
+      es: "Tu reloj favorito se detuvo. ¿Qué haces?",
     },
     fields: [{ ja: "どうする？", es: "¿Qué haces?" }],
+    choices: [[
+      { ja: "修理に出す", es: "Lo llevo a reparar" }, { ja: "電池を替える", es: "Le cambio la pila" },
+      { ja: "新しいのを買う", es: "Compro uno nuevo" }, { ja: "止まったまま飾る", es: "Lo guardo como adorno" },
+    ]],
     reveal: {
       ja: "止まった時計は「マンネリ化した関係」の象徴。「{{1}}」は、関係が停滞したときのあなたの立て直し方を表すと言われています。",
       es: "El reloj detenido simboliza una relación estancada. «{{1}}» es cómo reactivas una relación cuando cae en la rutina.",
@@ -377,10 +427,14 @@ export const TESTS: PsychTest[] = [
   {
     id: "old-diary",
     prompt: {
-      ja: "引き出しの奥から昔の日記が出てきました。どうしますか？（読み返す・そっと戻す・捨てる・相手に見せる）",
-      es: "Encuentras tu diario antiguo al fondo de un cajón. ¿Qué haces? (lo relees, lo guardas, lo botas, se lo muestras a tu pareja)",
+      ja: "引き出しの奥から昔の日記が出てきました。どうしますか？",
+      es: "Encuentras tu diario antiguo al fondo de un cajón. ¿Qué haces?",
     },
     fields: [{ ja: "どうする？", es: "¿Qué haces?" }],
+    choices: [[
+      { ja: "読み返す", es: "Lo releo" }, { ja: "そっと戻す", es: "Lo guardo tal cual" },
+      { ja: "捨てる", es: "Lo boto" }, { ja: "相手に見せる", es: "Se lo muestro a mi pareja" },
+    ]],
     reveal: {
       ja: "日記は「過去の自分」。「{{1}}」は、あなたが昔の自分や過去の恋とどう付き合っているかを表すと言われています。",
       es: "El diario es tu yo del pasado. «{{1}}» revela tu relación con quien fuiste y con tus amores anteriores.",
@@ -389,10 +443,14 @@ export const TESTS: PsychTest[] = [
   {
     id: "last-train",
     prompt: {
-      ja: "終電を逃しました。さて、どうする？（歩いて帰る・タクシー・朝まで遊ぶ・近くに泊まる）",
-      es: "Perdiste el último tren/micro. ¿Qué haces? (caminas a casa, taxi, carretear hasta el amanecer, alojarte cerca)",
+      ja: "終電を逃しました。さて、どうする？",
+      es: "Perdiste el último tren/micro. ¿Qué haces?",
     },
     fields: [{ ja: "どうする？", es: "¿Qué haces?" }],
+    choices: [[
+      { ja: "歩いて帰る", es: "Camino a casa" }, { ja: "タクシーに乗る", es: "Tomo un taxi" },
+      { ja: "朝まで遊ぶ", es: "Carreteo hasta el amanecer" }, { ja: "近くに泊まる", es: "Me alojo cerca" },
+    ]],
     reveal: {
       ja: "終電を逃した夜は「計画が崩れた瞬間」。「{{1}}」は、予定どおりに行かなくなったときのあなたの本性。ハプニングを楽しめる人か、着実に立て直す人か。",
       es: "Perder el último transporte es el plan que se derrumba. «{{1}}» muestra tu verdadero yo cuando nada sale según lo previsto: ¿gozas el imprevisto o reconstruyes el plan?",
@@ -410,6 +468,21 @@ export function testForDay(dayKey: string): PsychTest {
 /** Replace {{n}} placeholders with the answers. */
 export function fillReveal(template: string, answers: string[]): string {
   return template.replace(/\{\{(\d+)\}\}/g, (_, n) => answers[+n - 1] ?? "…");
+}
+
+/**
+ * Resolve stored answers for display in the viewer's language.
+ * Choice answers are stored as "#<index>"; free-text answers pass through.
+ */
+export function resolveAnswers(test: PsychTest, answers: string[], lang: "ja" | "es"): string[] {
+  return answers.map((a, i) => {
+    const opts = test.choices?.[i];
+    if (opts && /^#\d+$/.test(a)) {
+      const opt = opts[+a.slice(1)];
+      if (opt) return opt[lang];
+    }
+    return a;
+  });
 }
 
 export function quizTag(dayKey: string, role: "A" | "B"): string {
