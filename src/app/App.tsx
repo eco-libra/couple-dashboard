@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { BottomNav } from "./BottomNav";
 import { Background } from "./Background";
+import { Confetti } from "./Confetti";
 import { useT } from "../shared/i18n";
 import { useSettings, updateSettings, decodeShare } from "../shared/state/settings";
 import { HomePage } from "../features/home/HomePage";
@@ -38,6 +39,7 @@ export function App() {
   return (
     <>
       <Background />
+      <Confetti />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/clocks" element={<ClocksPage />} />

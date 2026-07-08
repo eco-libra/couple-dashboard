@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.0] — 2026-07-09
+### Added
+- **Cloud backup & restore**: shared settings (anniversaries, dates,
+  schedules) auto-back up to Cloudinary on every change; one-tap restore
+  per side in More — survives phone changes and cleared browser data.
+- **Quiz history**: ‹ date › navigation on the psych test (30 days back);
+  past days show both answers read-only (answering is same-day only).
+- **Memories gallery**: newest-first thumbnail grid (with video thumbnails)
+  under the random viewer; tap to open.
+- **Weather on sky cards**: current temp + condition emoji and
+  sunrise/sunset for both cities via open-meteo (keyless, 30-min cache).
+- **Anniversary confetti**: once-a-day celebration overlay when today is
+  an anniversary, the dating-anniversary, or reunion day.
+- In-site translation (previous deploy): browser Translator API with
+  MyMemory fallback; Google Translate link only as last resort.
+
 ## [0.10.0] — 2026-07-09
 ### Added
 - **Daily psych test** (`/quiz`, Home card): 30 classic projective tests

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
-import { useSettings, updateSettings, encodeShare } from "../../shared/state/settings";
+import { useSettings, updateSettings, encodeShare, restoreFromCloud } from "../../shared/state/settings";
 import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
 
 const LANGS: { id: Lang; label: string }[] = [
@@ -13,6 +13,15 @@ export function MorePage() {
   const t = useT();
   const s = useSettings();
   const [shareMsg, setShareMsg] = useState("");
+  const [restoreMsg, setRestoreMsg] = useState("");
+
+  const restore = async (role: "A" | "B") => {
+    if (!confirm(t.restoreConfirm)) return;
+    setRestoreMsg("…");
+    const ok = await restoreFromCloud(role);
+    setRestoreMsg(ok ? t.restoreDone : t.restoreNone);
+    setTimeout(() => setRestoreMsg(""), 4000);
+  };
 
   const copyShare = async () => {
     const url = `${location.origin}/#s=${encodeShare()}`;
@@ -76,6 +85,16 @@ export function MorePage() {
           <span className="muted">{shareMsg}</span>
         </div>
         <p className="muted" style={{ marginTop: 8 }}>{t.shareNote}</p>
+      </section>
+
+      <section className="card">
+        <p className="label">{t.backupLabel}</p>
+        <p className="muted" style={{ margin: "0 0 10px" }}>{t.backupNote}</p>
+        <div className="row">
+          <button onClick={() => restore("A")}>🗼 {t.restoreA}</button>
+          <button onClick={() => restore("B")}>🏔️ {t.restoreB}</button>
+          <span className="muted">{restoreMsg}</span>
+        </div>
       </section>
     </main>
   );

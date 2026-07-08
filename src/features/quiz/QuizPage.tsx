@@ -3,8 +3,10 @@ import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
 import { uploadTextRecord, fetchTextRecord } from "../../shared/services/cloudinary";
-import { momentDayKey } from "../same-moment/moment";
+import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
+
+const MAX_PAST_DAYS = 30;
 
 const inputStyle: React.CSSProperties = {
   width: "100%", font: "inherit", fontSize: 16,
@@ -18,7 +20,10 @@ export function QuizPage() {
   const now = useNow(60000);
   const lang = s.lang === "ja" ? "ja" : "es";
 
-  const dayKey = momentDayKey(now);
+  const [dayOffset, setDayOffset] = useState(0); // 0 = today, positive = days back
+  const todayKey = momentDayKey(now);
+  const dayKey = shiftDayKey(todayKey, -dayOffset);
+  const isToday = dayOffset === 0;
   const test = testForDay(dayKey);
   const role = s.role;
   const otherRole = role === "A" ? "B" : "A";
@@ -29,6 +34,14 @@ export function QuizPage() {
     try { return JSON.parse(localStorage.getItem(localKey) ?? "null"); } catch { return null; }
   });
   const [theirs, setTheirs] = useState<string[] | null>(null);
+
+  // Reset per-day state when navigating between days.
+  useEffect(() => {
+    setDrafts(test.fields.map(() => ""));
+    setTheirs(null);
+    try { setMine(JSON.parse(localStorage.getItem(localKey) ?? "null")); } catch { setMine(null); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dayKey]);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -91,17 +104,27 @@ export function QuizPage() {
     }
   };
 
-  const dayLabel = new Intl.DateTimeFormat(t.locale, { month: "long", day: "numeric", weekday: "short" }).format(now);
+  const dayLabel = new Intl.DateTimeFormat(t.locale, { month: "long", day: "numeric", weekday: "short" })
+    .format(dayKeyToDate(dayKey));
 
   return (
     <main className="page">
       <h1 className="page-title">🔮 {t.quizTitle}</h1>
-      <p className="page-sub">{dayLabel} — {t.quizSub}</p>
+      <p className="page-sub">{t.quizSub}</p>
+      <div className="row day-nav">
+        <button className="ghost-btn" disabled={dayOffset >= MAX_PAST_DAYS}
+          onClick={() => setDayOffset(o => Math.min(MAX_PAST_DAYS, o + 1))} aria-label="previous day">‹</button>
+        <span className="day-nav-label">{dayLabel}</span>
+        <button className="ghost-btn" disabled={isToday}
+          onClick={() => setDayOffset(o => Math.max(0, o - 1))} aria-label="next day">›</button>
+      </div>
 
       <section className="card">
         <p style={{ margin: "0 0 14px", fontSize: "1.05rem" }}>{test.prompt[lang]}</p>
 
-        {!mine ? (
+        {!mine && !isToday ? (
+          <p className="muted" style={{ margin: 0 }}>{t.quizPastNote}</p>
+        ) : !mine ? (
           <>
             {test.fields.map((f, i) => {
               const opts = test.choices?.[i];
@@ -142,7 +165,7 @@ export function QuizPage() {
         )}
       </section>
 
-      {mine && (
+      {(mine || !isToday) && (
         <section className="card">
           <p className="label">{t.quizPartnerResult}</p>
           {theirs ? (
@@ -154,11 +177,13 @@ export function QuizPage() {
                 ✨ {fillReveal(test.reveal[lang], resolveAnswers(test, theirs, lang))}
               </p>
             </>
-          ) : (
+          ) : isToday ? (
             <div className="row">
               <span className="muted">{t.quizWaiting}</span>
               <button onClick={loadTheirs}>🔄 {t.refresh}</button>
             </div>
+          ) : (
+            <p className="muted" style={{ margin: 0 }}>{t.quizNoAnswer}</p>
           )}
         </section>
       )}

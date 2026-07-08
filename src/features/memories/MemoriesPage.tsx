@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
-import { listMedia, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
+import { listMedia, imageUrl, videoUrl, videoThumbUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 
 export function MemoriesPage() {
   const t = useT();
@@ -11,6 +11,7 @@ export function MemoriesPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const reload = () => listMedia().then(m => {
+    m.sort((a, b) => b.version - a.version); // newest first for the gallery
     setMedia(m);
     setIdx(m.length ? Math.floor(Math.random() * m.length) : -1);
   });
@@ -58,6 +59,21 @@ export function MemoriesPage() {
           </div>
         </div>
       </section>
+
+      {media.length > 0 && (
+        <section className="card">
+          <p className="label">{t.memAllLabel(media.length)}</p>
+          <div className="gallery">
+            {media.map((m, i) => (
+              <button key={`${m.rtype}-${m.public_id}`} className="gallery-item"
+                onClick={() => { setIdx(i); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+                <img src={m.rtype === "video" ? videoThumbUrl(m) : imageUrl(m, 300)} alt="" loading="lazy" />
+                {m.rtype === "video" && <span className="gallery-play">▶</span>}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

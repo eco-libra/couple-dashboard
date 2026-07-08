@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { zoneClock, zoneParts, lifeState, skyPhase, type SkyPhase } from "../../shared/time/tz";
+import { getWeather, type CityWeather, type WeatherTz } from "../../shared/services/weather";
 
 const SKY: Record<SkyPhase, [string, string, "light" | "dark"]> = {
   night: ["var(--sky-night1)", "var(--sky-night2)", "dark"],
@@ -20,6 +22,11 @@ interface Props {
 export function CityCard({ tz, name, emoji, wake, sleep }: Props) {
   const t = useT();
   const now = useNow();
+  const [wx, setWx] = useState<CityWeather | null>(null);
+
+  useEffect(() => {
+    getWeather(tz as WeatherTz).then(setWx);
+  }, [tz]);
   const clock = zoneClock(tz, now);
   const p = zoneParts(tz, now);
   const [c1, c2, tone] = SKY[skyPhase(clock.hour)];
@@ -34,6 +41,11 @@ export function CityCard({ tz, name, emoji, wake, sleep }: Props) {
         {String(clock.hour).padStart(2, "0")}:{p.minute}
       </div>
       <div className="date">{dateLabel}</div>
+      {wx && (
+        <div className="date" style={{ fontVariantNumeric: "tabular-nums" }}>
+          {wx.emoji} {wx.temp}°　🌅{wx.sunrise} 🌇{wx.sunset}
+        </div>
+      )}
       <div className="status">{t[lifeState(clock.minuteOfDay, wake, sleep)]}</div>
     </div>
   );

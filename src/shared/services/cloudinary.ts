@@ -86,6 +86,11 @@ export function videoUrl(m: MediaItem): string {
   return `https://res.cloudinary.com/${CLOUD}/video/upload/q_auto/v${m.version}/${m.public_id}.mp4`;
 }
 
+/** JPEG thumbnail of a video's first frame. */
+export function videoThumbUrl(m: MediaItem, width = 300): string {
+  return `https://res.cloudinary.com/${CLOUD}/video/upload/w_${width}/v${m.version}/${m.public_id}.jpg`;
+}
+
 /** Upload files (4 in parallel). Calls onProgress(done, total) as items finish. */
 export async function uploadMedia(
   files: File[],

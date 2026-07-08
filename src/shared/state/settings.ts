@@ -3,6 +3,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { Lang } from "../i18n/dict";
+import { uploadTextRecord, fetchTextRecord } from "../services/cloudinary";
 
 export interface Anniversary { name: string; date: string }
 
@@ -49,6 +50,7 @@ export function updateSettings(patch: Partial<Settings>): void {
   current = { ...current, ...patch };
   localStorage.setItem(LS_KEY, JSON.stringify(current));
   listeners.forEach(fn => fn());
+  scheduleCloudBackup();
 }
 
 export function useSettings(): Settings {
@@ -67,6 +69,43 @@ export function encodeShare(): string {
   SHARE_KEYS.forEach(k => (o[k] = current[k]));
   return btoa(unescape(encodeURIComponent(JSON.stringify(o))))
     .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// ---- cloud backup (shared settings only, keyed by side) ----
+
+const backupTag = (role: "A" | "B") => `bk-${role}`;
+let backupTimer: ReturnType<typeof setTimeout> | undefined;
+
+function sharePayload(): string {
+  const o: Record<string, unknown> = {};
+  SHARE_KEYS.forEach(k => (o[k] = current[k]));
+  return JSON.stringify(o);
+}
+
+/** Debounced auto-backup to Cloudinary after each settings change. */
+function scheduleCloudBackup(): void {
+  if (!current.role) return;
+  clearTimeout(backupTimer);
+  const role = current.role;
+  backupTimer = setTimeout(() => { void uploadTextRecord(backupTag(role), sharePayload()); }, 4000);
+}
+
+/** Restore the shared settings from a side's latest cloud backup. */
+export async function restoreFromCloud(role: "A" | "B"): Promise<boolean> {
+  const raw = await fetchTextRecord(backupTag(role));
+  if (!raw) return false;
+  try {
+    const data = JSON.parse(raw);
+    const patch: Partial<Settings> = {};
+    SHARE_KEYS.forEach(k => {
+      if (data[k] !== undefined) (patch as Record<string, unknown>)[k] = data[k];
+    });
+    if (patch.annivs && !Array.isArray(patch.annivs)) patch.annivs = [];
+    updateSettings(patch);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function decodeShare(payload: string): Partial<Settings> {

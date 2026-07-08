@@ -51,6 +51,10 @@ export interface Dict {
   aiTranslating: string; aiCopy2: string; aiTransFailed: string; aiOpenGoogle: string;
   quizTitle: string; quizSub: string; quizSubmit: string;
   quizLockNote: string; quizYourResult: string; quizPartnerResult: string; quizWaiting: string;
+  quizPastNote: string; quizNoAnswer: string;
+  backupLabel: string; backupNote: string; restoreA: string; restoreB: string;
+  restoreConfirm: string; restoreDone: string; restoreNone: string;
+  memAllLabel: (n: number) => string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -133,6 +137,14 @@ export const DICTS: Record<Lang, Dict> = {
     quizLockNote: "🔒 種明かしと相手の答えは、あなたが回答するまで見られません。",
     quizYourResult: "あなたの答え", quizPartnerResult: "相手の答え",
     quizWaiting: "相手の回答を待っています…（反映に数分かかることがあります）",
+    quizPastNote: "この日は回答していません（回答は当日のみ）。",
+    quizNoAnswer: "この日の回答はありません。",
+    backupLabel: "バックアップと復元",
+    backupNote: "記念日などの設定は変更のたびに自動でクラウドへバックアップされます。機種変更後は自分の側を選んで復元してください。",
+    restoreA: "東京側を復元", restoreB: "サンティアゴ側を復元",
+    restoreConfirm: "クラウドのバックアップから復元しますか？この端末の設定は上書きされます。",
+    restoreDone: "復元しました✓", restoreNone: "バックアップが見つかりませんでした",
+    memAllLabel: n => `すべての思い出（${n}）`,
   },
   en: {
     locale: "en-US",
@@ -211,6 +223,14 @@ export const DICTS: Record<Lang, Dict> = {
     quizLockNote: "🔒 The reveal and your partner's answer stay hidden until you answer.",
     quizYourResult: "Your answer", quizPartnerResult: "Their answer",
     quizWaiting: "Waiting for their answer… (may take a few minutes to appear)",
+    quizPastNote: "You didn't answer this day (answers are same-day only).",
+    quizNoAnswer: "No answer for this day.",
+    backupLabel: "Backup & restore",
+    backupNote: "Settings like anniversaries are auto-backed up to the cloud on every change. After switching phones, restore your own side.",
+    restoreA: "Restore Tokyo side", restoreB: "Restore Santiago side",
+    restoreConfirm: "Restore from the cloud backup? Settings on this device will be overwritten.",
+    restoreDone: "Restored ✓", restoreNone: "No backup found",
+    memAllLabel: n => `All memories (${n})`,
   },
   es: {
     locale: "es-CL",
@@ -289,5 +309,13 @@ export const DICTS: Record<Lang, Dict> = {
     quizLockNote: "🔒 La revelación y la respuesta de tu pareja quedan ocultas hasta que respondas.",
     quizYourResult: "Tu respuesta", quizPartnerResult: "Su respuesta",
     quizWaiting: "Esperando su respuesta… (puede tardar unos minutos en aparecer)",
+    quizPastNote: "No respondiste este día (solo se puede responder el mismo día).",
+    quizNoAnswer: "No hay respuesta de este día.",
+    backupLabel: "Copia de seguridad y restauración",
+    backupNote: "Los ajustes (aniversarios, etc.) se respaldan automáticamente en la nube con cada cambio. Si cambias de teléfono, restaura tu lado.",
+    restoreA: "Restaurar lado Tokio", restoreB: "Restaurar lado Santiago",
+    restoreConfirm: "¿Restaurar desde la copia en la nube? Se sobrescribirán los ajustes de este dispositivo.",
+    restoreDone: "Restaurado ✓", restoreNone: "No se encontró copia de seguridad",
+    memAllLabel: n => `Todos los recuerdos (${n})`,
   },
 };
