@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.10.0] — 2026-07-09
+### Added
+- **Daily psych test** (`/quiz`, Home card): 30 classic projective tests
+  (ja/es bilingual, ~monthly rotation). One test per Tokyo day, chosen
+  deterministically so both sides get the same one; the reveal and the
+  partner's answers stay locked until you submit yours. Answers are stored
+  as context metadata on Cloudinary placeholder images — still no backend.
+### Changed
+- AI assistant replaced with a zero-cost tools page: Google Translate
+  hand-off (auto ja⇄es) + 32 curated bilingual conversation starters and
+  long-distance date ideas. The Claude-API version (v0.9.0) remains in git
+  history for potential revival.
+
 ## [0.8.0] — 2026-07-08
 ### Added
 - **Exchange rate card** (Home): ¥1,000 ⇄ CLP both directions, daily-cached,
