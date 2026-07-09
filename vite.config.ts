@@ -23,6 +23,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: "/index.html",
+        importScripts: ["push-sw.js"],
         // Never cache Cloudinary API calls; cache delivered images at runtime.
         runtimeCaching: [
           {

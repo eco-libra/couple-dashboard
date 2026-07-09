@@ -55,6 +55,8 @@ export interface Dict {
   backupLabel: string; backupNote: string; restoreA: string; restoreB: string;
   restoreConfirm: string; restoreDone: string; restoreNone: string;
   memAllLabel: (n: number) => string;
+  pushLabel: string; pushEnable: string; pushNote: string;
+  pushDone: string; pushFail: string; pushNeedRole: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -145,6 +147,12 @@ export const DICTS: Record<Lang, Dict> = {
     restoreConfirm: "クラウドのバックアップから復元しますか？この端末の設定は上書きされます。",
     restoreDone: "復元しました✓", restoreNone: "バックアップが見つかりませんでした",
     memAllLabel: n => `すべての思い出（${n}）`,
+    pushLabel: "相手の投稿の通知（プッシュ）",
+    pushEnable: "📬 この端末で受け取る",
+    pushNote: "相手が「今日の瞬間」や心理テストに投稿すると、アプリを閉じていても通知が届きます。iPhoneはホーム画面に追加したアプリから設定してください。",
+    pushDone: "設定しました✓ 相手の投稿を待ちましょう",
+    pushFail: "設定に失敗しました。もう一度試してください。",
+    pushNeedRole: "先に「いまの瞬間」タブでどちら側かを選んでください。",
   },
   en: {
     locale: "en-US",
@@ -231,6 +239,12 @@ export const DICTS: Record<Lang, Dict> = {
     restoreConfirm: "Restore from the cloud backup? Settings on this device will be overwritten.",
     restoreDone: "Restored ✓", restoreNone: "No backup found",
     memAllLabel: n => `All memories (${n})`,
+    pushLabel: "Partner activity (push)",
+    pushEnable: "📬 Receive on this device",
+    pushNote: "Get notified when your partner posts a moment or answers the quiz — even with the app closed. On iPhone, set this up from the home-screen app.",
+    pushDone: "Set up ✓ — wait for their next post",
+    pushFail: "Setup failed. Please try again.",
+    pushNeedRole: "Pick your side on the Moment tab first.",
   },
   es: {
     locale: "es-CL",
@@ -317,5 +331,11 @@ export const DICTS: Record<Lang, Dict> = {
     restoreConfirm: "¿Restaurar desde la copia en la nube? Se sobrescribirán los ajustes de este dispositivo.",
     restoreDone: "Restaurado ✓", restoreNone: "No se encontró copia de seguridad",
     memAllLabel: n => `Todos los recuerdos (${n})`,
+    pushLabel: "Actividad de tu pareja (push)",
+    pushEnable: "📬 Recibir en este dispositivo",
+    pushNote: "Recibe una notificación cuando tu pareja publique un momento o responda el test — incluso con la app cerrada. En iPhone, configúralo desde la app de la pantalla de inicio.",
+    pushDone: "Listo ✓ — espera su próxima publicación",
+    pushFail: "Falló la configuración. Intenta de nuevo.",
+    pushNeedRole: "Primero elige tu lado en la pestaña Momento.",
   },
 };

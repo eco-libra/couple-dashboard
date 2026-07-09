@@ -5,6 +5,7 @@ import { useSettings, updateSettings } from "../../shared/state/settings";
 import { uploadTextRecord, fetchTextRecord } from "../../shared/services/cloudinary";
 import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
+import { notifyPartner } from "../../shared/services/push";
 
 const MAX_PAST_DAYS = 30;
 
@@ -98,6 +99,7 @@ export function QuizPage() {
       setMine(answers);
       localStorage.setItem(localKey, JSON.stringify(answers));
       setMsg("");
+      notifyPartner("quiz", role === "A" ? "B" : "A");
       setTimeout(loadTheirs, 2500);
     } else {
       setMsg(t.memFailed);

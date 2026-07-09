@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
 import { useSettings, updateSettings, encodeShare, restoreFromCloud } from "../../shared/state/settings";
 import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
+import { enablePush } from "../../shared/services/push";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -14,6 +15,20 @@ export function MorePage() {
   const s = useSettings();
   const [shareMsg, setShareMsg] = useState("");
   const [restoreMsg, setRestoreMsg] = useState("");
+  const [pushMsg, setPushMsg] = useState(() =>
+    localStorage.getItem("futari-push-ok") === "1" ? "✓" : "");
+
+  const setupPush = async () => {
+    if (!s.role) { alert(t.pushNeedRole); return; }
+    setPushMsg("…");
+    const r = await enablePush(s.role);
+    if (r === "ok") {
+      localStorage.setItem("futari-push-ok", "1");
+      setPushMsg(t.pushDone);
+    } else {
+      setPushMsg(r === "unsupported" ? t.notifUnsupported : r === "denied" ? t.notifDenied : t.pushFail);
+    }
+  };
 
   const restore = async (role: "A" | "B") => {
     if (!confirm(t.restoreConfirm)) return;
@@ -77,6 +92,15 @@ export function MorePage() {
           }}>{t.notifEnable}</button>
         )}
         <p className="muted" style={{ marginTop: 8 }}>{t.notifNote}</p>
+      </section>
+
+      <section className="card">
+        <p className="label">{t.pushLabel}</p>
+        <div className="row">
+          <button onClick={setupPush}>{t.pushEnable}</button>
+          <span className="muted">{pushMsg}</span>
+        </div>
+        <p className="muted" style={{ marginTop: 8 }}>{t.pushNote}</p>
       </section>
 
       <section className="card">

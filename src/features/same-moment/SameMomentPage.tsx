@@ -5,6 +5,7 @@ import { useSettings, updateSettings } from "../../shared/state/settings";
 import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
+import { notifyPartner } from "../../shared/services/push";
 import { computeStreak } from "./streak";
 
 const MAX_PAST_DAYS = 30;
@@ -100,6 +101,7 @@ export function SameMomentPage() {
     setMsg(t.memUploading);
     const ok = await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
     setDayOffset(0); // uploads always belong to today — jump back to it
+    if (ok) notifyPartner("moment", role === "A" ? "B" : "A");
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
