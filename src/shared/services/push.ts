@@ -8,10 +8,12 @@ const SUPABASE_ANON =
 const VAPID_PUBLIC =
   "BJsEqBIK1xPEk8i-8_PbR9uCEGX-DFSbhFs1XUcsSDb48mzX_s-YeG274RHGMmKxAh75xRq5lzR9cpHpj1GiI3I";
 
-function urlBase64ToUint8Array(base64: string): Uint8Array {
+function urlBase64ToUint8Array(base64: string): Uint8Array<ArrayBuffer> {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
   const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
-  return Uint8Array.from(raw, c => c.charCodeAt(0));
+  const out = new Uint8Array(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
 }
 
 export type PushSetupResult = "ok" | "denied" | "unsupported" | "error";
