@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
 import type { FeatureCollection, Polygon, MultiPolygon } from "geojson";
@@ -6,6 +6,7 @@ import landTopo from "world-atlas/land-110m.json";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings } from "../../shared/state/settings";
+import { shareMyLocation, fetchLocations, type SharedLocation } from "../../shared/services/location";
 import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
 import { TOKYO, SANTIAGO, haversineKm, greatCircle, isNight, type LatLon } from "./geo";
@@ -19,7 +20,7 @@ const land = feature(
   (landTopo as unknown as { objects: { land: GeometryCollection } }).objects.land,
 ) as unknown as FeatureCollection<Polygon | MultiPolygon>;
 
-function drawMap(ctx: CanvasRenderingContext2D, now: Date) {
+function drawMap(ctx: CanvasRenderingContext2D, now: Date, posA: LatLon, posB: LatLon) {
   ctx.clearRect(0, 0, W, H);
 
   // ocean
@@ -57,7 +58,7 @@ function drawMap(ctx: CanvasRenderingContext2D, now: Date) {
   ctx.strokeStyle = "#E58089";
   ctx.lineWidth = 2;
   ctx.setLineDash([6, 5]);
-  const path = greatCircle(TOKYO, SANTIAGO, 128);
+  const path = greatCircle(posA, posB, 128);
   ctx.beginPath();
   let prevX: number | null = null;
   for (const p of path) {
@@ -70,7 +71,7 @@ function drawMap(ctx: CanvasRenderingContext2D, now: Date) {
   ctx.setLineDash([]);
 
   // city markers
-  for (const [p, emoji] of [[TOKYO, "🗼"], [SANTIAGO, "🏔️"]] as const) {
+  for (const [p, emoji] of [[posA, "🗼"], [posB, "🏔️"]] as const) {
     const [x, y] = project(p);
     ctx.fillStyle = "#E58089";
     ctx.beginPath();
@@ -90,13 +91,40 @@ export function MapPage() {
   const s = useSettings();
   const now = useNow(60000);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [locs, setLocs] = useState<Partial<Record<"A" | "B", SharedLocation>>>({});
+  const [shareMsg, setShareMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const reloadLocs = useCallback(() => { fetchLocations().then(setLocs); }, []);
+  useEffect(() => { reloadLocs(); }, [reloadLocs]);
+
+  const posA: LatLon = locs.A ? { lat: locs.A.lat, lon: locs.A.lon } : TOKYO;
+  const posB: LatLon = locs.B ? { lat: locs.B.lat, lon: locs.B.lon } : SANTIAGO;
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
-    if (ctx) drawMap(ctx, now);
-  }, [now]);
+    if (ctx) drawMap(ctx, now, posA, posB);
+  }, [now, posA.lat, posA.lon, posB.lat, posB.lon]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const km = Math.round(haversineKm(TOKYO, SANTIAGO));
+  const share = async () => {
+    if (!s.role) { alert(t.pushNeedRole); return; }
+    setBusy(true);
+    setShareMsg("…");
+    const r = await shareMyLocation(s.role);
+    setBusy(false);
+    setShareMsg(r === "ok" ? t.locShared : r === "denied" ? t.locDenied : t.locFail);
+    if (r === "ok") reloadLocs();
+    setTimeout(() => setShareMsg(""), 4000);
+  };
+
+  const agoOf = (l?: SharedLocation) => {
+    if (!l) return null;
+    const mins = Math.max(0, Math.round((now.getTime() - new Date(l.updated_at).getTime()) / 60000));
+    return t.timeAgo(mins);
+  };
+
+  const km = Math.round(haversineKm(posA, posB));
+  const isLive = Boolean(locs.A || locs.B);
 
   return (
     <main className="page">
@@ -108,7 +136,20 @@ export function MapPage() {
       </section>
 
       <section className="card">
-        <p className="label">{t.mapDistance}</p>
+        <div className="row" style={{ justifyContent: "space-between" }}>
+          <p className="label" style={{ margin: 0 }}>{t.locLabel}</p>
+          <button disabled={busy} onClick={share}>📍 {t.locShareBtn}</button>
+        </div>
+        {shareMsg && <p className="muted" style={{ margin: "8px 0 0" }}>{shareMsg}</p>}
+        <p className="muted" style={{ margin: "8px 0 0", fontVariantNumeric: "tabular-nums" }}>
+          🗼 {locs.A ? `${t.locLive}（${agoOf(locs.A)}）` : t.locDefault}
+          {"　"}
+          🏔️ {locs.B ? `${t.locLive}（${agoOf(locs.B)}）` : t.locDefault}
+        </p>
+      </section>
+
+      <section className="card">
+        <p className="label">{t.mapDistance}{isLive ? " ✨" : ""}</p>
         <div className="big-num">{km.toLocaleString(t.locale)}<small> km</small></div>
         <p className="muted" style={{ margin: "6px 0 0" }}>{t.mapNote}</p>
       </section>

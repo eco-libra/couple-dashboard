@@ -57,6 +57,9 @@ export interface Dict {
   memAllLabel: (n: number) => string;
   pushLabel: string; pushEnable: string; pushNote: string;
   pushDone: string; pushFail: string; pushNeedRole: string;
+  locLabel: string; locShareBtn: string; locShared: string;
+  locDenied: string; locFail: string; locLive: string; locDefault: string;
+  timeAgo: (mins: number) => string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -153,6 +156,13 @@ export const DICTS: Record<Lang, Dict> = {
     pushDone: "設定しました✓ 相手の投稿を待ちましょう",
     pushFail: "設定に失敗しました。もう一度試してください。",
     pushNeedRole: "先に「いまの瞬間」タブでどちら側かを選んでください。",
+    locLabel: "いまここ共有",
+    locShareBtn: "いまここを共有",
+    locShared: "共有しました✓ 地図に反映されます",
+    locDenied: "位置情報の使用が許可されていません。ブラウザの設定を確認してください。",
+    locFail: "共有に失敗しました。",
+    locLive: "実際の現在地", locDefault: "ホームの街",
+    timeAgo: m => (m < 60 ? `${m}分前` : m < 1440 ? `${Math.floor(m / 60)}時間前` : `${Math.floor(m / 1440)}日前`),
   },
   en: {
     locale: "en-US",
@@ -245,6 +255,13 @@ export const DICTS: Record<Lang, Dict> = {
     pushDone: "Set up ✓ — wait for their next post",
     pushFail: "Setup failed. Please try again.",
     pushNeedRole: "Pick your side on the Moment tab first.",
+    locLabel: "I'm-here sharing",
+    locShareBtn: "Share my location",
+    locShared: "Shared ✓ — the map will update",
+    locDenied: "Location access is blocked. Check your browser settings.",
+    locFail: "Sharing failed.",
+    locLive: "live location", locDefault: "home city",
+    timeAgo: m => (m < 60 ? `${m} min ago` : m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`),
   },
   es: {
     locale: "es-CL",
@@ -337,5 +354,12 @@ export const DICTS: Record<Lang, Dict> = {
     pushDone: "Listo ✓ — espera su próxima publicación",
     pushFail: "Falló la configuración. Intenta de nuevo.",
     pushNeedRole: "Primero elige tu lado en la pestaña Momento.",
+    locLabel: "Compartir «estoy aquí»",
+    locShareBtn: "Compartir mi ubicación",
+    locShared: "Compartido ✓ — el mapa se actualizará",
+    locDenied: "El acceso a la ubicación está bloqueado. Revisa la configuración del navegador.",
+    locFail: "No se pudo compartir.",
+    locLive: "ubicación real", locDefault: "ciudad de origen",
+    timeAgo: m => (m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.floor(m / 60)} h` : `hace ${Math.floor(m / 1440)} días`),
   },
 };

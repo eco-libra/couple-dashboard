@@ -1,10 +1,8 @@
 // Web Push subscription (client side). Subscriptions are stored in Supabase
 // keyed by side; /api/notify sends pushes to the partner's devices.
 
-const SUPABASE_URL = "https://llllihlioyxffwbuxsjf.supabase.co";
-// anon key — public by design (RLS limits what it can do)
-const SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsbGxpaGxpb3l4ZmZ3YnV4c2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MTczMTIsImV4cCI6MjA5OTA5MzMxMn0.anl9Yx12CMWerCHIyobTwiZJWazL504vhyEZWOz269E";
+import { SUPABASE_URL, SUPABASE_ANON } from "./supabase";
+
 const VAPID_PUBLIC =
   "BJsEqBIK1xPEk8i-8_PbR9uCEGX-DFSbhFs1XUcsSDb48mzX_s-YeG274RHGMmKxAh75xRq5lzR9cpHpj1GiI3I";
 
