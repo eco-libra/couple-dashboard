@@ -66,6 +66,25 @@ export function MorePage() {
       </section>
 
       <section className="card">
+        <p className="label">{t.profileLabel}</p>
+        <div className="set-grid">
+          <span>🗼 {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameA} placeholder={t.tokyo}
+            onChange={e => updateSettings({ nameA: e.target.value })} />
+          <span>{t.profileEmoji}</span>
+          <input type="text" maxLength={4} value={s.emojiA} placeholder="🗼"
+            onChange={e => updateSettings({ emojiA: e.target.value })} />
+          <span>🏔️ {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameB} placeholder={t.santiago}
+            onChange={e => updateSettings({ nameB: e.target.value })} />
+          <span>{t.profileEmoji}</span>
+          <input type="text" maxLength={4} value={s.emojiB} placeholder="🏔️"
+            onChange={e => updateSettings({ emojiB: e.target.value })} />
+        </div>
+        <p className="muted" style={{ marginTop: 10 }}>{t.profileNote}</p>
+      </section>
+
+      <section className="card">
         <p className="label">{t.settings}</p>
         <div className="set-grid">
           <span>{t.wakeALabel}</span>{timeField("wakeA")}

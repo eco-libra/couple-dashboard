@@ -2,16 +2,26 @@
 // Secrets (Supabase service role, VAPID private key) live in Vercel env vars.
 import webpush from "web-push";
 
-const MESSAGES: Record<string, { body: string; url: string }> = {
-  moment: {
-    body: "📸 相手が「今日の瞬間」を投稿したよ / Tu pareja publicó un momento",
-    url: "/moment",
-  },
-  quiz: {
-    body: "🔮 相手が心理テストに答えたよ / Tu pareja respondió el test de hoy",
-    url: "/quiz",
-  },
-};
+function message(type: string, fromName: string): { body: string; url: string } | null {
+  const who = fromName || null;
+  if (type === "moment") {
+    return {
+      body: who
+        ? `📸 ${who}が「今日の瞬間」を投稿したよ / ${who} publicó un momento`
+        : "📸 相手が「今日の瞬間」を投稿したよ / Tu pareja publicó un momento",
+      url: "/moment",
+    };
+  }
+  if (type === "quiz") {
+    return {
+      body: who
+        ? `🔮 ${who}が心理テストに答えたよ / ${who} respondió el test de hoy`
+        : "🔮 相手が心理テストに答えたよ / Tu pareja respondió el test de hoy",
+      url: "/quiz",
+    };
+  }
+  return null;
+}
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
@@ -28,8 +38,9 @@ export default async function handler(req: any, res: any) {
     return res.status(503).json({ error: "not_configured" });
   }
 
-  const { type, toRole } = req.body ?? {};
-  if (!MESSAGES[type] || !["A", "B"].includes(toRole)) {
+  const { type, toRole, fromName } = req.body ?? {};
+  const msg = message(String(type), String(fromName ?? "").slice(0, 30));
+  if (!msg || !["A", "B"].includes(toRole)) {
     return res.status(400).json({ error: "bad_input" });
   }
 
@@ -47,7 +58,7 @@ export default async function handler(req: any, res: any) {
   const payload = JSON.stringify({
     title: "ふたりの時間",
     tag: `futari-${type}`,
-    ...MESSAGES[type],
+    ...msg,
   });
 
   let sent = 0;

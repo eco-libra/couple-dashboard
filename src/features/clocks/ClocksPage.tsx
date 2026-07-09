@@ -4,6 +4,7 @@ import { useNow } from "../../shared/time/useNow";
 import { useSettings } from "../../shared/state/settings";
 import { TZ_A, TZ_B, zoneDiffMin, toMin, mod1440, fmtHM } from "../../shared/time/tz";
 import { CityCard } from "./CityCard";
+import { sideDisplay } from "../../shared/profile";
 import { OverlapTimeline, OverlapSummary } from "./OverlapTimeline";
 
 function Converter() {
@@ -44,8 +45,10 @@ export function ClocksPage() {
     <main className="page">
       <h1 className="page-title">{t.homeTimeCard}</h1>
       <section className="cities">
-        <CityCard tz={TZ_A} name={t.tokyo} emoji="🗼" wake={s.wakeA} sleep={s.sleepA} />
-        <CityCard tz={TZ_B} name={t.santiago} emoji="🏔️" wake={s.wakeB} sleep={s.sleepB} />
+        <CityCard tz={TZ_A} name={sideDisplay(s, t, "A").name} emoji={sideDisplay(s, t, "A").emoji}
+          wake={s.wakeA} sleep={s.sleepA} />
+        <CityCard tz={TZ_B} name={sideDisplay(s, t, "B").name} emoji={sideDisplay(s, t, "B").emoji}
+          wake={s.wakeB} sleep={s.sleepB} />
       </section>
       <section className="card">
         <p className="label">{t.overlapLabel}</p>

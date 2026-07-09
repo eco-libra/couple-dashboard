@@ -18,6 +18,9 @@ export interface Settings {
   role: "A" | "B" | "";
   /** Hourly "share this moment" notification (per-device). */
   notif: boolean;
+  /** Profile (shared): display names and avatar emoji per side. */
+  nameA: string; nameB: string;
+  emojiA: string; emojiB: string;
 }
 
 const LS_KEY = "futari-dash-v1";
@@ -26,6 +29,7 @@ const DEFAULTS: Settings = {
   wakeA: "07:00", sleepA: "23:30",
   wakeB: "07:00", sleepB: "23:30",
   meet: "", start: "", annivs: [], lang: "ja", role: "", notif: false,
+  nameA: "", nameB: "", emojiA: "", emojiB: "",
 };
 
 function load(): Settings {
@@ -62,7 +66,10 @@ export function useSettings(): Settings {
 
 // ---- share-link sync (settings encoded in URL hash) ----
 
-const SHARE_KEYS = ["wakeA", "sleepA", "wakeB", "sleepB", "meet", "start", "annivs"] as const;
+const SHARE_KEYS = [
+  "wakeA", "sleepA", "wakeB", "sleepB", "meet", "start", "annivs",
+  "nameA", "nameB", "emojiA", "emojiB",
+] as const;
 
 export function encodeShare(): string {
   const o: Record<string, unknown> = {};

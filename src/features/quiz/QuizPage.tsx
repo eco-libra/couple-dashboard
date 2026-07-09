@@ -6,6 +6,7 @@ import { uploadTextRecord, fetchTextRecord } from "../../shared/services/cloudin
 import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
 import { notifyPartner } from "../../shared/services/push";
+import { sideDisplay } from "../../shared/profile";
 
 const MAX_PAST_DAYS = 30;
 
@@ -99,7 +100,7 @@ export function QuizPage() {
       setMine(answers);
       localStorage.setItem(localKey, JSON.stringify(answers));
       setMsg("");
-      notifyPartner("quiz", role === "A" ? "B" : "A");
+      notifyPartner("quiz", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
       setTimeout(loadTheirs, 2500);
     } else {
       setMsg(t.memFailed);
@@ -169,7 +170,9 @@ export function QuizPage() {
 
       {(mine || !isToday) && (
         <section className="card">
-          <p className="label">{t.quizPartnerResult}</p>
+          <p className="label">
+            {sideDisplay(s, t, otherRole).emoji} {t.answerOf(sideDisplay(s, t, otherRole).name)}
+          </p>
           {theirs ? (
             <>
               <p className="muted" style={{ margin: "0 0 10px" }}>

@@ -49,10 +49,10 @@ export async function enablePush(role: "A" | "B"): Promise<PushSetupResult> {
 }
 
 /** Fire-and-forget: notify the partner's devices about an activity. */
-export function notifyPartner(type: "moment" | "quiz", toRole: "A" | "B"): void {
+export function notifyPartner(type: "moment" | "quiz", toRole: "A" | "B", fromName?: string): void {
   void fetch("/api/notify", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, toRole }),
+    body: JSON.stringify({ type, toRole, fromName: (fromName ?? "").trim().slice(0, 30) }),
   }).catch(() => { /* best effort */ });
 }

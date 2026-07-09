@@ -60,6 +60,8 @@ export interface Dict {
   locLabel: string; locShareBtn: string; locShared: string;
   locDenied: string; locFail: string; locLive: string; locDefault: string;
   timeAgo: (mins: number) => string;
+  profileLabel: string; profileName: string; profileEmoji: string; profileNote: string;
+  answerOf: (name: string) => string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -163,6 +165,10 @@ export const DICTS: Record<Lang, Dict> = {
     locFail: "共有に失敗しました。",
     locLive: "実際の現在地", locDefault: "ホームの街",
     timeAgo: m => (m < 60 ? `${m}分前` : m < 1440 ? `${Math.floor(m / 60)}時間前` : `${Math.floor(m / 1440)}日前`),
+    profileLabel: "ふたりのプロフィール",
+    profileName: "名前", profileEmoji: "絵文字",
+    profileNote: "名前と好きな絵文字は、時計・地図・心理テスト・通知など全体に反映されます。他の設定と同じく自動で相手にもバックアップ共有されます。",
+    answerOf: n => `${n}の答え`,
   },
   en: {
     locale: "en-US",
@@ -262,6 +268,10 @@ export const DICTS: Record<Lang, Dict> = {
     locFail: "Sharing failed.",
     locLive: "live location", locDefault: "home city",
     timeAgo: m => (m < 60 ? `${m} min ago` : m < 1440 ? `${Math.floor(m / 60)} h ago` : `${Math.floor(m / 1440)} d ago`),
+    profileLabel: "Your profiles",
+    profileName: "Name", profileEmoji: "Emoji",
+    profileNote: "Names and avatar emoji appear across clocks, the map, the quiz and notifications. Backed up and shared like other settings.",
+    answerOf: n => `${n}'s answer`,
   },
   es: {
     locale: "es-CL",
@@ -361,5 +371,9 @@ export const DICTS: Record<Lang, Dict> = {
     locFail: "No se pudo compartir.",
     locLive: "ubicación real", locDefault: "ciudad de origen",
     timeAgo: m => (m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.floor(m / 60)} h` : `hace ${Math.floor(m / 1440)} días`),
+    profileLabel: "Sus perfiles",
+    profileName: "Nombre", profileEmoji: "Emoji",
+    profileNote: "Los nombres y el emoji aparecen en los relojes, el mapa, el test y las notificaciones. Se respaldan y comparten como los demás ajustes.",
+    answerOf: n => `Respuesta de ${n}`,
   },
 };

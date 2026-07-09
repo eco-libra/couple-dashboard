@@ -7,6 +7,7 @@ import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings } from "../../shared/state/settings";
 import { shareMyLocation, fetchLocations, type SharedLocation } from "../../shared/services/location";
+import { sideDisplay } from "../../shared/profile";
 import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
 import { TOKYO, SANTIAGO, haversineKm, greatCircle, isNight, type LatLon } from "./geo";
@@ -20,7 +21,7 @@ const land = feature(
   (landTopo as unknown as { objects: { land: GeometryCollection } }).objects.land,
 ) as unknown as FeatureCollection<Polygon | MultiPolygon>;
 
-function drawMap(ctx: CanvasRenderingContext2D, now: Date, posA: LatLon, posB: LatLon) {
+function drawMap(ctx: CanvasRenderingContext2D, now: Date, posA: LatLon, posB: LatLon, emojiA: string, emojiB: string) {
   ctx.clearRect(0, 0, W, H);
 
   // ocean
@@ -71,7 +72,7 @@ function drawMap(ctx: CanvasRenderingContext2D, now: Date, posA: LatLon, posB: L
   ctx.setLineDash([]);
 
   // city markers
-  for (const [p, emoji] of [[posA, "🗼"], [posB, "🏔️"]] as const) {
+  for (const [p, emoji] of [[posA, emojiA], [posB, emojiB]] as const) {
     const [x, y] = project(p);
     ctx.fillStyle = "#E58089";
     ctx.beginPath();
@@ -101,10 +102,13 @@ export function MapPage() {
   const posA: LatLon = locs.A ? { lat: locs.A.lat, lon: locs.A.lon } : TOKYO;
   const posB: LatLon = locs.B ? { lat: locs.B.lat, lon: locs.B.lon } : SANTIAGO;
 
+  const dispA = sideDisplay(s, t, "A");
+  const dispB = sideDisplay(s, t, "B");
+
   useEffect(() => {
     const ctx = canvasRef.current?.getContext("2d");
-    if (ctx) drawMap(ctx, now, posA, posB);
-  }, [now, posA.lat, posA.lon, posB.lat, posB.lon]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (ctx) drawMap(ctx, now, posA, posB, dispA.emoji, dispB.emoji);
+  }, [now, posA.lat, posA.lon, posB.lat, posB.lon, dispA.emoji, dispB.emoji]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const share = async () => {
     if (!s.role) { alert(t.pushNeedRole); return; }
@@ -142,9 +146,9 @@ export function MapPage() {
         </div>
         {shareMsg && <p className="muted" style={{ margin: "8px 0 0" }}>{shareMsg}</p>}
         <p className="muted" style={{ margin: "8px 0 0", fontVariantNumeric: "tabular-nums" }}>
-          🗼 {locs.A ? `${t.locLive}（${agoOf(locs.A)}）` : t.locDefault}
+          {dispA.emoji} {dispA.name}: {locs.A ? `${t.locLive}（${agoOf(locs.A)}）` : t.locDefault}
           {"　"}
-          🏔️ {locs.B ? `${t.locLive}（${agoOf(locs.B)}）` : t.locDefault}
+          {dispB.emoji} {dispB.name}: {locs.B ? `${t.locLive}（${agoOf(locs.B)}）` : t.locDefault}
         </p>
       </section>
 
@@ -155,8 +159,8 @@ export function MapPage() {
       </section>
 
       <section className="cities">
-        <CityCard tz={TZ_A} name={t.tokyo} emoji="🗼" wake={s.wakeA} sleep={s.sleepA} />
-        <CityCard tz={TZ_B} name={t.santiago} emoji="🏔️" wake={s.wakeB} sleep={s.sleepB} />
+        <CityCard tz={TZ_A} name={dispA.name} emoji={dispA.emoji} wake={s.wakeA} sleep={s.sleepA} />
+        <CityCard tz={TZ_B} name={dispB.name} emoji={dispB.emoji} wake={s.wakeB} sleep={s.sleepB} />
       </section>
     </main>
   );

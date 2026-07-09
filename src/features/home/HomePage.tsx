@@ -3,6 +3,7 @@ import { useT } from "../../shared/i18n";
 import { useSettings } from "../../shared/state/settings";
 import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
+import { sideDisplay } from "../../shared/profile";
 import { OverlapSummary } from "../clocks/OverlapTimeline";
 import { ReunionCountdown, TogetherDays } from "../milestones/MilestonesPage";
 import { RateCard } from "../context/RateCard";
@@ -21,8 +22,10 @@ export function HomePage() {
 
       <Link to="/clocks" style={{ textDecoration: "none", color: "inherit" }}>
         <section className="cities">
-          <CityCard tz={TZ_A} name={t.tokyo} emoji="🗼" wake={s.wakeA} sleep={s.sleepA} />
-          <CityCard tz={TZ_B} name={t.santiago} emoji="🏔️" wake={s.wakeB} sleep={s.sleepB} />
+          <CityCard tz={TZ_A} name={sideDisplay(s, t, "A").name} emoji={sideDisplay(s, t, "A").emoji}
+            wake={s.wakeA} sleep={s.sleepA} />
+          <CityCard tz={TZ_B} name={sideDisplay(s, t, "B").name} emoji={sideDisplay(s, t, "B").emoji}
+            wake={s.wakeB} sleep={s.sleepB} />
         </section>
       </Link>
 

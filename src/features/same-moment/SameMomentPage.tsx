@@ -6,6 +6,7 @@ import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
 import { notifyPartner } from "../../shared/services/push";
+import { sideDisplay } from "../../shared/profile";
 import { computeStreak } from "./streak";
 
 const MAX_PAST_DAYS = 30;
@@ -101,7 +102,7 @@ export function SameMomentPage() {
     setMsg(t.memUploading);
     const ok = await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
     setDayOffset(0); // uploads always belong to today — jump back to it
-    if (ok) notifyPartner("moment", role === "A" ? "B" : "A");
+    if (ok) notifyPartner("moment", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
@@ -143,18 +144,20 @@ export function SameMomentPage() {
           const asleepA = asleepAtTokyoHour(h, s.wakeA, s.sleepA, 0);
           const asleepB = asleepAtTokyoHour(h, s.wakeB, s.sleepB, diffBA);
 
+          const dispA = sideDisplay(s, t, "A");
+          const dispB = sideDisplay(s, t, "B");
           if (!a && !b) {
             return (
               <div key={h} className="feed-compact">
-                <span>🗼 {tokyoHM} {asleepA && "😴"}</span>
-                <span>🏔️ {chileHM} {asleepB && "😴"}</span>
+                <span>{dispA.emoji} {tokyoHM} {asleepA && "😴"}</span>
+                <span>{dispB.emoji} {chileHM} {asleepB && "😴"}</span>
               </div>
             );
           }
           return (
             <div key={h} className="feed-row">
-              <FeedSlot item={a} tz={TZ_A} emoji="🗼" hourLocalHM={tokyoHM} asleep={asleepA} />
-              <FeedSlot item={b} tz={TZ_B} emoji="🏔️" hourLocalHM={chileHM} asleep={asleepB} />
+              <FeedSlot item={a} tz={TZ_A} emoji={dispA.emoji} hourLocalHM={tokyoHM} asleep={asleepA} />
+              <FeedSlot item={b} tz={TZ_B} emoji={dispB.emoji} hourLocalHM={chileHM} asleep={asleepB} />
             </div>
           );
         })}
