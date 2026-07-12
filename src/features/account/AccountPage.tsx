@@ -28,21 +28,21 @@ export function AccountPage() {
     setBusy(true);
     const ok = await signInWithEmail(email.trim());
     setBusy(false);
-    setMsg(ok ? t.accLinkSent : t.aiError);
+    setMsg(ok ? t.accLinkSent : t.pushFail);
   };
 
   const doCreate = async () => {
     setBusy(true);
     const invite = await createCouple();
     setBusy(false);
-    if (!invite) setMsg(t.aiError);
+    if (!invite) setMsg(t.pushFail);
   };
 
   const doJoin = async () => {
     setBusy(true);
     const r = await joinCouple(code);
     setBusy(false);
-    setMsg(r === "ok" ? t.accJoined : r === "not_found" ? t.accCodeNotFound : r === "full" ? t.accCoupleFull : t.aiError);
+    setMsg(r === "ok" ? t.accJoined : r === "not_found" ? t.accCodeNotFound : r === "full" ? t.accCoupleFull : t.pushFail);
   };
 
   const copyInvite = async () => {
