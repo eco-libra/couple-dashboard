@@ -3,6 +3,8 @@ import { useT } from "../../shared/i18n";
 import {
   useAccount, signInWithEmail, signOut, createCouple, joinCouple,
 } from "../../shared/state/account";
+import { useCoupleScope } from "../../shared/state/scope";
+import { migrateLegacy, legacyMigrated } from "../../shared/services/migrate";
 
 const inputStyle: React.CSSProperties = {
   width: "100%", font: "inherit", fontSize: 16,
@@ -17,6 +19,18 @@ export function AccountPage() {
   const [code, setCode] = useState("");
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const scope = useCoupleScope();
+  const [migMsg, setMigMsg] = useState("");
+  const [migDone, setMigDone] = useState(() => legacyMigrated());
+
+  const runMigration = async () => {
+    if (!scope) return;
+    setBusy(true);
+    const ok = await migrateLegacy(scope, setMigMsg);
+    setBusy(false);
+    setMigMsg(ok ? t.migDone : t.pushFail);
+    if (ok) setMigDone(true);
+  };
 
   // Auto-join when opened via an invite link (/account?join=CODE)
   useEffect(() => {
@@ -106,6 +120,16 @@ export function AccountPage() {
               <p className="muted" style={{ margin: "10px 0 0" }}>✅ {t.accPaired}</p>
             )}
           </section>
+          {!migDone && (
+            <section className="card">
+              <p className="label">{t.migLabel}</p>
+              <p className="muted" style={{ margin: "0 0 10px" }}>{t.migNote}</p>
+              <div className="row">
+                <button disabled={busy} onClick={runMigration}>📦 {t.migBtn}</button>
+                <span className="muted">{migMsg}</span>
+              </div>
+            </section>
+          )}
           <section className="card">
             <button onClick={() => { void signOut(); }}>{t.accSignOut}</button>
           </section>

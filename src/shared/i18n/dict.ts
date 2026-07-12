@@ -69,6 +69,7 @@ export interface Dict {
   accCodeNotFound: string; accCoupleFull: string;
   accCoupleLabel: string; accSignedInAs: string; accInviteNote: string;
   accCopyInvite: string; accPaired: string; accSignOut: string;
+  migLabel: string; migNote: string; migBtn: string; migDone: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -190,6 +191,9 @@ export const DICTS: Record<Lang, Dict> = {
     accInviteNote: "相手にこのコード（またはリンク）を送ってください：",
     accCopyInvite: "招待リンクをコピー", accPaired: "二人そろっています",
     accSignOut: "ログアウト",
+    migLabel: "既存データの引き継ぎ",
+    migNote: "アカウント作成前の写真・今日の瞬間・心理テストの回答（直近30日）をこのペアに取り込みます。二人のうちどちらかが1回だけ実行してください。",
+    migBtn: "引き継ぎを実行", migDone: "引き継ぎました✓",
   },
   en: {
     locale: "en-US",
@@ -307,6 +311,9 @@ export const DICTS: Record<Lang, Dict> = {
     accInviteNote: "Send your partner this code (or link):",
     accCopyInvite: "Copy invite link", accPaired: "You're both here",
     accSignOut: "Sign out",
+    migLabel: "Import existing data",
+    migNote: "Imports pre-account photos, moments and quiz answers (last 30 days) into this pair. Run once, by either of you.",
+    migBtn: "Run import", migDone: "Imported ✓",
   },
   es: {
     locale: "es-CL",
@@ -424,5 +431,8 @@ export const DICTS: Record<Lang, Dict> = {
     accInviteNote: "Envíale a tu pareja este código (o enlace):",
     accCopyInvite: "Copiar enlace de invitación", accPaired: "Ya están los dos",
     accSignOut: "Cerrar sesión",
+    migLabel: "Importar datos existentes",
+    migNote: "Importa a esta pareja las fotos, momentos y respuestas del test (últimos 30 días) previos a la cuenta. Ejecutar una sola vez, cualquiera de los dos.",
+    migBtn: "Ejecutar importación", migDone: "Importado ✓",
   },
 };
