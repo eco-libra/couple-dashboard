@@ -59,6 +59,25 @@ export function AccountPage() {
     setMsg(r === "ok" ? t.accJoined : r === "not_found" ? t.accCodeNotFound : r === "full" ? t.accCoupleFull : t.pushFail);
   };
 
+  const deleteAccount = async () => {
+    if (!confirm(t.accDeleteConfirm)) return;
+    setBusy(true);
+    const { sb } = await import("../../shared/services/supabase");
+    const { data } = await sb.auth.getSession();
+    const jwt = data.session?.access_token;
+    const r = jwt
+      ? await fetch("/api/delete-account", { method: "POST", headers: { Authorization: `Bearer ${jwt}` } })
+      : null;
+    setBusy(false);
+    if (r?.ok) {
+      await signOut();
+      localStorage.clear();
+      location.href = "/";
+    } else {
+      setMsg(t.pushFail);
+    }
+  };
+
   const copyInvite = async () => {
     const url = `${location.origin}/account?join=${acc.inviteCode}`;
     try { await navigator.clipboard.writeText(url); setMsg(t.shareCopied); } catch { prompt("URL", url); }
@@ -131,10 +150,19 @@ export function AccountPage() {
             </section>
           )}
           <section className="card">
-            <button onClick={() => { void signOut(); }}>{t.accSignOut}</button>
+            <div className="row">
+              <button onClick={() => { void signOut(); }}>{t.accSignOut}</button>
+              <button style={{ color: "var(--akane-ink)" }} onClick={deleteAccount}>{t.accDelete}</button>
+            </div>
           </section>
         </>
       )}
+
+      <p className="muted" style={{ fontSize: ".78rem" }}>
+        <a href="/terms" style={{ color: "var(--ink-soft)" }}>{t.legalTerms}</a>
+        {" ・ "}
+        <a href="/privacy" style={{ color: "var(--ink-soft)" }}>{t.legalPrivacy}</a>
+      </p>
     </main>
   );
 }

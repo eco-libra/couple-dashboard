@@ -17,6 +17,7 @@ import { MapPage } from "../features/map/MapPage";
 import { AiPage } from "../features/ai/AiPage";
 import { QuizPage } from "../features/quiz/QuizPage";
 import { AccountPage } from "../features/account/AccountPage";
+import { LegalPage } from "../features/legal/LegalPage";
 
 export function App() {
   const t = useT();
@@ -53,6 +54,8 @@ export function App() {
         <Route path="/ai" element={<AiPage />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/terms" element={<LegalPage kind="terms" />} />
+        <Route path="/privacy" element={<LegalPage kind="privacy" />} />
         <Route path="/more" element={<MorePage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>

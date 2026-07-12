@@ -4,14 +4,14 @@
 export interface Holiday {
   date: string; // YYYY-MM-DD
   localName: string;
-  country: "JP" | "CL";
+  country: string; // ISO country code
 }
 
 const LS_KEY = "futari-holidays-v1";
 
 type Cache = Record<string, { date: string; localName: string }[]>;
 
-async function yearHolidays(country: "JP" | "CL", year: number): Promise<Holiday[]> {
+async function yearHolidays(country: string, year: number): Promise<Holiday[]> {
   const key = `${country}-${year}`;
   let cache: Cache = {};
   try { cache = JSON.parse(localStorage.getItem(LS_KEY) ?? "{}"); } catch { /* fresh */ }
@@ -31,13 +31,18 @@ async function yearHolidays(country: "JP" | "CL", year: number): Promise<Holiday
 }
 
 /** Next `limit` upcoming holidays across both countries, soonest first. */
-export async function getUpcomingHolidays(now: Date, limit = 5): Promise<Holiday[]> {
+export async function getUpcomingHolidays(
+  now: Date,
+  countries: [string, string] = ["JP", "CL"],
+  limit = 5,
+): Promise<Holiday[]> {
   const year = now.getFullYear();
   const todayISO = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     .toISOString().slice(0, 10);
+  const [ca, cb] = countries;
   const lists = await Promise.all([
-    yearHolidays("JP", year), yearHolidays("CL", year),
-    yearHolidays("JP", year + 1), yearHolidays("CL", year + 1),
+    yearHolidays(ca, year), yearHolidays(cb, year),
+    yearHolidays(ca, year + 1), yearHolidays(cb, year + 1),
   ]);
   return lists.flat()
     .filter(h => h.date >= todayISO)

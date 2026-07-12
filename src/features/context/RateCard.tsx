@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
 import { useT } from "../../shared/i18n";
-import { getJpyClp, type RateInfo } from "../../shared/services/rates";
+import { useSettings } from "../../shared/state/settings";
+import { getRate, type RateInfo } from "../../shared/services/rates";
+import { currencyOf, flagEmoji } from "../../shared/cityPair";
 
 export function RateCard() {
   const t = useT();
+  const s = useSettings();
   const [rate, setRate] = useState<RateInfo | null>(null);
 
-  useEffect(() => { getJpyClp().then(setRate); }, []);
+  const curA = currencyOf(s.ccA);
+  const curB = currencyOf(s.ccB);
+
+  useEffect(() => {
+    if (curA !== curB) void getRate(curA, curB).then(setRate);
+  }, [curA, curB]);
+
+  if (curA === curB) return null; // same currency — nothing to convert
 
   return (
     <section className="card">
@@ -14,12 +24,12 @@ export function RateCard() {
       {rate ? (
         <>
           <div style={{ fontSize: "1.15rem", fontVariantNumeric: "tabular-nums" }}>
-            🇯🇵 ¥1,000 = 🇨🇱 <strong style={{ color: "var(--akane-ink)" }}>
-              {Math.round(1000 * rate.clpPerJpy).toLocaleString(t.locale)}
-            </strong> CLP
+            {flagEmoji(s.ccA)} 1,000 {curA} = {flagEmoji(s.ccB)} <strong style={{ color: "var(--akane-ink)" }}>
+              {Math.round(1000 * rate.rate).toLocaleString(t.locale)}
+            </strong> {curB}
           </div>
           <div className="muted" style={{ fontVariantNumeric: "tabular-nums", marginTop: 4 }}>
-            🇨🇱 $1,000 CLP = 🇯🇵 ¥{Math.round(1000 / rate.clpPerJpy).toLocaleString(t.locale)}
+            {flagEmoji(s.ccB)} 1,000 {curB} = {flagEmoji(s.ccA)} {Math.round(1000 / rate.rate).toLocaleString(t.locale)} {curA}
           </div>
           <p className="muted" style={{ marginTop: 8, fontSize: ".72rem" }}>{rate.dateISO} UTC</p>
         </>

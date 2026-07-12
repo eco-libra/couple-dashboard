@@ -6,7 +6,7 @@ export interface Dict {
   tokyo: string; santiago: string;
   navHome: string; navMoment: string; navMap: string; navMemories: string; navMore: string;
   overlapLabel: string; now: string;
-  hourAxis: (h: number) => string;
+  hourAxis: (h: number, city: string) => string;
   legendA: string; legendB: string; legendBoth: string;
   awake: string; asleep: string; soonWake: string; soonSleep: string;
   canTalk: (h: number, m: number) => string;
@@ -70,6 +70,9 @@ export interface Dict {
   accCoupleLabel: string; accSignedInAs: string; accInviteNote: string;
   accCopyInvite: string; accPaired: string; accSignOut: string;
   migLabel: string; migNote: string; migBtn: string; migDone: string;
+  cityLabel: string; cityPh: string; cityNote: string;
+  legalTerms: string; legalPrivacy: string;
+  accDelete: string; accDeleteConfirm: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -81,7 +84,7 @@ export const DICTS: Record<Lang, Dict> = {
     tokyo: "東京", santiago: "サンティアゴ",
     navHome: "ホーム", navMoment: "いまの瞬間", navMap: "地図", navMemories: "思い出", navMore: "その他",
     overlapLabel: "話せる時間", now: "いま",
-    hourAxis: h => (h === 24 ? "24時（東京時間）" : `${h}時`),
+    hourAxis: (h, city) => (h === 24 ? `24時（${city}時間）` : `${h}時`),
     legendA: "東京側が起きている", legendB: "サンティアゴ側が起きている", legendBoth: "ふたりとも起きている",
     awake: "☀️ 起きてる", asleep: "😴 寝てる", soonWake: "🌤️ そろそろ起きる", soonSleep: "🌙 そろそろ寝る時間",
     canTalk: (h, m) => `いま話せる！ あと ${h}時間${m}分`,
@@ -194,6 +197,12 @@ export const DICTS: Record<Lang, Dict> = {
     migLabel: "既存データの引き継ぎ",
     migNote: "アカウント作成前の写真・今日の瞬間・心理テストの回答（直近30日）をこのペアに取り込みます。二人のうちどちらかが1回だけ実行してください。",
     migBtn: "引き継ぎを実行", migDone: "引き継ぎました✓",
+    cityLabel: "ふたりの街",
+    cityPh: "都市名で検索（例: Osaka, Buenos Aires）",
+    cityNote: "時計・地図・天気・祝日・為替がこの2つの街に合わせて表示されます。",
+    legalTerms: "利用規約", legalPrivacy: "プライバシーポリシー",
+    accDelete: "アカウント削除",
+    accDeleteConfirm: "アカウントを削除しますか？プロフィール・回答・位置情報などが削除されます。この操作は取り消せません。",
   },
   en: {
     locale: "en-US",
@@ -201,7 +210,7 @@ export const DICTS: Record<Lang, Dict> = {
     tokyo: "Tokyo", santiago: "Santiago",
     navHome: "Home", navMoment: "Moment", navMap: "Map", navMemories: "Memories", navMore: "More",
     overlapLabel: "Time to talk", now: "now",
-    hourAxis: h => (h === 24 ? "24:00 (Tokyo)" : `${h}:00`),
+    hourAxis: (h, city) => (h === 24 ? `24:00 (${city})` : `${h}:00`),
     legendA: "Tokyo side awake", legendB: "Santiago side awake", legendBoth: "Both awake",
     awake: "☀️ Awake", asleep: "😴 Asleep", soonWake: "🌤️ Waking up soon", soonSleep: "🌙 Bedtime soon",
     canTalk: (h, m) => `You can talk now! ${h}h ${m}m left`,
@@ -314,6 +323,12 @@ export const DICTS: Record<Lang, Dict> = {
     migLabel: "Import existing data",
     migNote: "Imports pre-account photos, moments and quiz answers (last 30 days) into this pair. Run once, by either of you.",
     migBtn: "Run import", migDone: "Imported ✓",
+    cityLabel: "Your two cities",
+    cityPh: "Search a city (e.g. Osaka, Buenos Aires)",
+    cityNote: "Clocks, map, weather, holidays and exchange rate follow these two cities.",
+    legalTerms: "Terms of Service", legalPrivacy: "Privacy Policy",
+    accDelete: "Delete account",
+    accDeleteConfirm: "Delete your account? Your profile, answers and locations will be removed. This cannot be undone.",
   },
   es: {
     locale: "es-CL",
@@ -321,7 +336,7 @@ export const DICTS: Record<Lang, Dict> = {
     tokyo: "Tokio", santiago: "Santiago",
     navHome: "Inicio", navMoment: "Momento", navMap: "Mapa", navMemories: "Recuerdos", navMore: "Más",
     overlapLabel: "Hora de hablar", now: "ahora",
-    hourAxis: h => (h === 24 ? "24:00 (Tokio)" : `${h}:00`),
+    hourAxis: (h, city) => (h === 24 ? `24:00 (hora de ${city})` : `${h}:00`),
     legendA: "Lado de Tokio despierto", legendB: "Lado de Santiago despierto", legendBoth: "Ambos despiertos",
     awake: "☀️ Despierto/a", asleep: "😴 Durmiendo", soonWake: "🌤️ Pronto despierta", soonSleep: "🌙 Pronto a dormir",
     canTalk: (h, m) => `¡Pueden hablar ahora! Quedan ${h}h ${m}m`,
@@ -434,5 +449,11 @@ export const DICTS: Record<Lang, Dict> = {
     migLabel: "Importar datos existentes",
     migNote: "Importa a esta pareja las fotos, momentos y respuestas del test (últimos 30 días) previos a la cuenta. Ejecutar una sola vez, cualquiera de los dos.",
     migBtn: "Ejecutar importación", migDone: "Importado ✓",
+    cityLabel: "Sus dos ciudades",
+    cityPh: "Busca una ciudad (ej. Osaka, Buenos Aires)",
+    cityNote: "Los relojes, el mapa, el clima, los feriados y el cambio siguen estas dos ciudades.",
+    legalTerms: "Términos del servicio", legalPrivacy: "Política de privacidad",
+    accDelete: "Eliminar cuenta",
+    accDeleteConfirm: "¿Eliminar tu cuenta? Se borrarán tu perfil, respuestas y ubicaciones. No se puede deshacer.",
   },
 };

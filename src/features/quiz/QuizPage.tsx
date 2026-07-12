@@ -25,7 +25,7 @@ export function QuizPage() {
   const lang = s.lang === "ja" ? "ja" : "es";
 
   const [dayOffset, setDayOffset] = useState(0); // 0 = today, positive = days back
-  const todayKey = momentDayKey(now);
+  const todayKey = momentDayKey(now, s.tzA);
   const dayKey = shiftDayKey(todayKey, -dayOffset);
   const isToday = dayOffset === 0;
   const test = testForDay(dayKey);

@@ -10,9 +10,8 @@ import { shareMyLocation, fetchLocations, type SharedLocation } from "../../shar
 import { sideDisplay } from "../../shared/profile";
 import { useCoupleScope } from "../../shared/state/scope";
 import { shareLocation2, fetchLocations2 } from "../../shared/services/couple-data";
-import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
-import { TOKYO, SANTIAGO, haversineKm, greatCircle, isNight, type LatLon } from "./geo";
+import { haversineKm, greatCircle, isNight, type LatLon } from "./geo";
 
 const W = 720, H = 360;
 const project = (p: LatLon): [number, number] =>
@@ -104,8 +103,8 @@ export function MapPage() {
   }, [scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { reloadLocs(); }, [reloadLocs]);
 
-  const posA: LatLon = locs.A ? { lat: locs.A.lat, lon: locs.A.lon } : TOKYO;
-  const posB: LatLon = locs.B ? { lat: locs.B.lat, lon: locs.B.lon } : SANTIAGO;
+  const posA: LatLon = locs.A ? { lat: locs.A.lat, lon: locs.A.lon } : { lat: s.latA, lon: s.lonA };
+  const posB: LatLon = locs.B ? { lat: locs.B.lat, lon: locs.B.lon } : { lat: s.latB, lon: s.lonB };
 
   const dispA = sideDisplay(s, t, "A");
   const dispB = sideDisplay(s, t, "B");
@@ -175,8 +174,10 @@ export function MapPage() {
       </section>
 
       <section className="cities">
-        <CityCard tz={TZ_A} name={dispA.name} emoji={dispA.emoji} wake={s.wakeA} sleep={s.sleepA} />
-        <CityCard tz={TZ_B} name={dispB.name} emoji={dispB.emoji} wake={s.wakeB} sleep={s.sleepB} />
+        <CityCard tz={s.tzA} lat={s.latA} lon={s.lonA} name={dispA.name} emoji={dispA.emoji}
+          wake={s.wakeA} sleep={s.sleepA} />
+        <CityCard tz={s.tzB} lat={s.latB} lon={s.lonB} name={dispB.name} emoji={dispB.emoji}
+          wake={s.wakeB} sleep={s.sleepB} />
       </section>
     </main>
   );

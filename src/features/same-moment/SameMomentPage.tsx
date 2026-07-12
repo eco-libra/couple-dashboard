@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
-import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
+import { zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
 import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
@@ -69,25 +69,25 @@ export function SameMomentPage() {
   const [streak, setStreak] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const todayKey = momentDayKey(now);
+  const todayKey = momentDayKey(now, s.tzA);
   const dayKey = shiftDayKey(todayKey, -dayOffset);
   const role = scope ? scope.side : s.role;
-  const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
-  const currentHour = zoneClock(TZ_A, now).hour;
+  const diffBA = zoneDiffMin(s.tzA, s.tzB, now);
+  const currentHour = zoneClock(s.tzA, now).hour;
 
   const reload = useCallback(async () => {
     if (scope) {
       const rows = await listMoments2(scope, dayKey);
-      setPhotosA(bucketByTokyoHour(rows.filter(r => r.side === "A")));
-      setPhotosB(bucketByTokyoHour(rows.filter(r => r.side === "B")));
+      setPhotosA(bucketByTokyoHour(rows.filter(r => r.side === "A"), s.tzA));
+      setPhotosB(bucketByTokyoHour(rows.filter(r => r.side === "B"), s.tzA));
       return;
     }
     const [a, b] = await Promise.all([
       listMediaByTag(momentTag(dayKey, "A")),
       listMediaByTag(momentTag(dayKey, "B")),
     ]);
-    setPhotosA(bucketByTokyoHour(a));
-    setPhotosB(bucketByTokyoHour(b));
+    setPhotosA(bucketByTokyoHour(a, s.tzA));
+    setPhotosB(bucketByTokyoHour(b, s.tzA));
   }, [dayKey, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { reload(); }, [reload]);
@@ -175,8 +175,8 @@ export function SameMomentPage() {
           }
           return (
             <div key={h} className="feed-row">
-              <FeedSlot item={a} tz={TZ_A} emoji={dispA.emoji} hourLocalHM={tokyoHM} asleep={asleepA} />
-              <FeedSlot item={b} tz={TZ_B} emoji={dispB.emoji} hourLocalHM={chileHM} asleep={asleepB} />
+              <FeedSlot item={a} tz={s.tzA} emoji={dispA.emoji} hourLocalHM={tokyoHM} asleep={asleepA} />
+              <FeedSlot item={b} tz={s.tzB} emoji={dispB.emoji} hourLocalHM={chileHM} asleep={asleepB} />
             </div>
           );
         })}

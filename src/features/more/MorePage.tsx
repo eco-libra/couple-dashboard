@@ -4,6 +4,7 @@ import { useSettings, updateSettings, encodeShare, restoreFromCloud } from "../.
 import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
 import { enablePush, enablePush2 } from "../../shared/services/push";
 import { useCoupleScope } from "../../shared/state/scope";
+import { CityPicker } from "./CityPicker";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -90,6 +91,8 @@ export function MorePage() {
         </div>
         <p className="muted" style={{ marginTop: 10 }}>{t.profileNote}</p>
       </section>
+
+      <CityPicker />
 
       <section className="card">
         <p className="label">{t.settings}</p>

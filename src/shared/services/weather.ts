@@ -7,13 +7,6 @@ export interface CityWeather {
   sunset: string;
 }
 
-const CITIES = {
-  "Asia/Tokyo": { lat: 35.68, lon: 139.69 },
-  "America/Santiago": { lat: -33.45, lon: -70.66 },
-} as const;
-
-export type WeatherTz = keyof typeof CITIES;
-
 function wxEmoji(code: number): string {
   if (code === 0) return "☀️";
   if (code <= 2) return "🌤️";
@@ -26,14 +19,13 @@ function wxEmoji(code: number): string {
   return "⛈️";
 }
 
-export async function getWeather(tz: WeatherTz): Promise<CityWeather | null> {
-  const cacheKey = `futari-wx-${tz}`;
+export async function getWeather(lat: number, lon: number, tz: string): Promise<CityWeather | null> {
+  const cacheKey = `futari-wx-${lat.toFixed(2)},${lon.toFixed(2)}`;
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) ?? "null");
     if (cached && Date.now() - cached.at < 30 * 60_000) return cached.wx;
   } catch { /* refetch */ }
 
-  const { lat, lon } = CITIES[tz];
   try {
     const r = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +

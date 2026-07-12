@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { zoneClock, zoneParts, lifeState, skyPhase, type SkyPhase } from "../../shared/time/tz";
-import { getWeather, type CityWeather, type WeatherTz } from "../../shared/services/weather";
+import { getWeather, type CityWeather } from "../../shared/services/weather";
 
 const SKY: Record<SkyPhase, [string, string, "light" | "dark"]> = {
   night: ["var(--sky-night1)", "var(--sky-night2)", "dark"],
@@ -13,20 +13,22 @@ const SKY: Record<SkyPhase, [string, string, "light" | "dark"]> = {
 
 interface Props {
   tz: string;
+  lat: number;
+  lon: number;
   name: string;
   emoji: string;
   wake: string;
   sleep: string;
 }
 
-export function CityCard({ tz, name, emoji, wake, sleep }: Props) {
+export function CityCard({ tz, lat, lon, name, emoji, wake, sleep }: Props) {
   const t = useT();
   const now = useNow();
   const [wx, setWx] = useState<CityWeather | null>(null);
 
   useEffect(() => {
-    getWeather(tz as WeatherTz).then(setWx);
-  }, [tz]);
+    getWeather(lat, lon, tz).then(setWx);
+  }, [tz, lat, lon]);
   const clock = zoneClock(tz, now);
   const p = zoneParts(tz, now);
   const [c1, c2, tone] = SKY[skyPhase(clock.hour)];
