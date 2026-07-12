@@ -5,6 +5,7 @@ import { enableNotifications, notifStatus, showNotification } from "../same-mome
 import { enablePush, enablePush2 } from "../../shared/services/push";
 import { useCoupleScope } from "../../shared/state/scope";
 import { CityPicker } from "./CityPicker";
+import { flagEmoji } from "../../shared/cityPair";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -76,17 +77,17 @@ export function MorePage() {
       <section className="card">
         <p className="label">{t.profileLabel}</p>
         <div className="set-grid">
-          <span>🗼 {t.profileName}</span>
-          <input type="text" maxLength={20} value={s.nameA} placeholder={t.tokyo}
+          <span>{flagEmoji(s.ccA)} {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameA} placeholder={s.cityA}
             onChange={e => updateSettings({ nameA: e.target.value })} />
           <span>{t.profileEmoji}</span>
-          <input type="text" maxLength={4} value={s.emojiA} placeholder="🗼"
+          <input type="text" maxLength={4} value={s.emojiA} placeholder={flagEmoji(s.ccA)}
             onChange={e => updateSettings({ emojiA: e.target.value })} />
-          <span>🏔️ {t.profileName}</span>
-          <input type="text" maxLength={20} value={s.nameB} placeholder={t.santiago}
+          <span>{flagEmoji(s.ccB)} {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameB} placeholder={s.cityB}
             onChange={e => updateSettings({ nameB: e.target.value })} />
           <span>{t.profileEmoji}</span>
-          <input type="text" maxLength={4} value={s.emojiB} placeholder="🏔️"
+          <input type="text" maxLength={4} value={s.emojiB} placeholder={flagEmoji(s.ccB)}
             onChange={e => updateSettings({ emojiB: e.target.value })} />
         </div>
         <p className="muted" style={{ marginTop: 10 }}>{t.profileNote}</p>
@@ -144,8 +145,8 @@ export function MorePage() {
         <p className="label">{t.backupLabel}</p>
         <p className="muted" style={{ margin: "0 0 10px" }}>{t.backupNote}</p>
         <div className="row">
-          <button onClick={() => restore("A")}>🗼 {t.restoreA}</button>
-          <button onClick={() => restore("B")}>🏔️ {t.restoreB}</button>
+          <button onClick={() => restore("A")}>{flagEmoji(s.ccA)} {t.restoreA}</button>
+          <button onClick={() => restore("B")}>{flagEmoji(s.ccB)} {t.restoreB}</button>
           <span className="muted">{restoreMsg}</span>
         </div>
       </section>

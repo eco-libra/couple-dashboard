@@ -7,6 +7,7 @@ import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from 
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
 import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
+import { flagEmoji } from "../../shared/cityPair";
 import { useCoupleScope } from "../../shared/state/scope";
 import { listMoments2, uploadMedia2 } from "../../shared/services/media2";
 import { computeStreak, streakFromDays } from "./streak";
@@ -18,12 +19,13 @@ const MAX_BYTES = 25 * 1024 * 1024;
 
 function RolePicker() {
   const t = useT();
+  const s = useSettings();
   return (
     <section className="card">
       <p className="label">{t.rolePick}</p>
       <div className="row">
-        <button onClick={() => updateSettings({ role: "A" })}>🗼 {t.tokyo}</button>
-        <button onClick={() => updateSettings({ role: "B" })}>🏔️ {t.santiago}</button>
+        <button onClick={() => updateSettings({ role: "A" })}>{flagEmoji(s.ccA)} {s.cityA}</button>
+        <button onClick={() => updateSettings({ role: "B" })}>{flagEmoji(s.ccB)} {s.cityB}</button>
       </div>
       <p className="muted" style={{ marginTop: 8 }}>{t.roleNote}</p>
     </section>

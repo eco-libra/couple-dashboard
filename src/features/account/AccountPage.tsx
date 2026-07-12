@@ -124,7 +124,7 @@ export function AccountPage() {
           <section className="card">
             <p className="label">{t.accCoupleLabel}</p>
             <p style={{ margin: 0 }}>
-              {t.accSignedInAs}: <strong>{acc.session.user.email}</strong>（{acc.profile.side === "A" ? "🗼 A" : "🏔️ B"}）
+              {t.accSignedInAs}: <strong>{acc.session.user.email}</strong>（{acc.profile.side}）
             </p>
             {acc.inviteCode ? (
               <>

@@ -7,6 +7,7 @@ import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
 import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
+import { flagEmoji } from "../../shared/cityPair";
 import { useCoupleScope } from "../../shared/state/scope";
 import { saveQuizAnswer2, fetchQuizAnswers2 } from "../../shared/services/couple-data";
 
@@ -98,8 +99,8 @@ export function QuizPage() {
         <section className="card">
           <p className="label">{t.rolePick}</p>
           <div className="row">
-            <button onClick={() => updateSettings({ role: "A" })}>🗼 {t.tokyo}</button>
-            <button onClick={() => updateSettings({ role: "B" })}>🏔️ {t.santiago}</button>
+            <button onClick={() => updateSettings({ role: "A" })}>{flagEmoji(s.ccA)} {s.cityA}</button>
+            <button onClick={() => updateSettings({ role: "B" })}>{flagEmoji(s.ccB)} {s.cityB}</button>
           </div>
           <p className="muted" style={{ marginTop: 8 }}>{t.roleNote}</p>
         </section>
