@@ -73,6 +73,9 @@ export interface Dict {
   cityLabel: string; cityPh: string; cityNote: string;
   legalTerms: string; legalPrivacy: string;
   accDelete: string; accDeleteConfirm: string;
+  welcomeTitle: string; welcomeP1: string; welcomeP2: string; welcomeCta: string;
+  pairPromptTitle: string; pairPromptNote: string; pairPromptCta: string;
+  citiesPromptTitle: string; citiesPromptNote: string; citiesPromptCta: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -203,6 +206,16 @@ export const DICTS: Record<Lang, Dict> = {
     legalTerms: "利用規約", legalPrivacy: "プライバシーポリシー",
     accDelete: "アカウント削除",
     accDeleteConfirm: "アカウントを削除しますか？プロフィール・回答・位置情報などが削除されます。この操作は取り消せません。",
+    welcomeTitle: "ようこそ、ふたりの時間へ",
+    welcomeP1: "時差のある二人のための、時計・写真・心理テスト・地図がひとつになったアプリです。",
+    welcomeP2: "無料でアカウントを作って、招待コードで相手とつながりましょう。",
+    welcomeCta: "はじめる",
+    pairPromptTitle: "あと一歩！",
+    pairPromptNote: "ペアを作成するか、相手の招待コードで参加すると全機能が使えます。",
+    pairPromptCta: "ペア設定へ",
+    citiesPromptTitle: "ふたりの街を設定しよう",
+    citiesPromptNote: "二人の住む街を選ぶと、時計・天気・地図・祝日があなたたち仕様になります。",
+    citiesPromptCta: "街を選ぶ",
   },
   en: {
     locale: "en-US",
@@ -329,6 +342,16 @@ export const DICTS: Record<Lang, Dict> = {
     legalTerms: "Terms of Service", legalPrivacy: "Privacy Policy",
     accDelete: "Delete account",
     accDeleteConfirm: "Delete your account? Your profile, answers and locations will be removed. This cannot be undone.",
+    welcomeTitle: "Welcome to Our Hours",
+    welcomeP1: "Clocks, photos, psych tests and a live map — one app for couples across time zones.",
+    welcomeP2: "Create a free account and connect with your partner via an invite code.",
+    welcomeCta: "Get started",
+    pairPromptTitle: "One more step!",
+    pairPromptNote: "Create a pair or join with your partner's invite code to unlock everything.",
+    pairPromptCta: "Set up pairing",
+    citiesPromptTitle: "Set your two cities",
+    citiesPromptNote: "Pick where you both live — clocks, weather, map and holidays will follow.",
+    citiesPromptCta: "Choose cities",
   },
   es: {
     locale: "es-CL",
@@ -455,5 +478,15 @@ export const DICTS: Record<Lang, Dict> = {
     legalTerms: "Términos del servicio", legalPrivacy: "Política de privacidad",
     accDelete: "Eliminar cuenta",
     accDeleteConfirm: "¿Eliminar tu cuenta? Se borrarán tu perfil, respuestas y ubicaciones. No se puede deshacer.",
+    welcomeTitle: "Bienvenido/a a Nuestras Horas",
+    welcomeP1: "Relojes, fotos, tests y un mapa en vivo — una app para parejas en distintas zonas horarias.",
+    welcomeP2: "Crea una cuenta gratis y conéctate con tu pareja mediante un código de invitación.",
+    welcomeCta: "Comenzar",
+    pairPromptTitle: "¡Un paso más!",
+    pairPromptNote: "Crea una pareja o únete con el código de invitación para desbloquear todo.",
+    pairPromptCta: "Configurar pareja",
+    citiesPromptTitle: "Configuren sus dos ciudades",
+    citiesPromptNote: "Elijan dónde vive cada uno — relojes, clima, mapa y feriados se ajustarán.",
+    citiesPromptCta: "Elegir ciudades",
   },
 };

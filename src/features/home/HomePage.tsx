@@ -6,6 +6,7 @@ import { sideDisplay } from "../../shared/profile";
 import { OverlapSummary } from "../clocks/OverlapTimeline";
 import { ReunionCountdown, TogetherDays } from "../milestones/MilestonesPage";
 import { RateCard } from "../context/RateCard";
+import { WelcomeCard } from "./WelcomeCard";
 import { HolidaysCard } from "../context/HolidaysCard";
 
 export function HomePage() {
@@ -18,6 +19,8 @@ export function HomePage() {
         <h1 className="page-title">{t.title}</h1>
         <p className="page-sub">{t.subtitle}</p>
       </header>
+
+      <WelcomeCard />
 
       <Link to="/clocks" style={{ textDecoration: "none", color: "inherit" }}>
         <section className="cities">
