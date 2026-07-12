@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.0] — 2026-07-12
+### Added — multi-tenant release (open to any couple)
+- Accounts (Supabase magic-link) and couple pairing via invite code/link;
+  RLS-isolated per-couple data for media, moments, quiz answers, locations,
+  settings and push subscriptions. Instant partner sync (no CDN lag).
+- Per-couple cities: search any city (open-meteo geocoding); clocks,
+  overlap, converter, map, weather, holidays and exchange rate follow the
+  pair. Default avatars use country flags.
+- Onboarding welcome card (sign-in → pair → cities), Terms & Privacy pages
+  (ja/en/es), JWT-verified account deletion, one-tap legacy data import
+  for the original couple.
+- Legacy single-couple mode still works when signed out.
+
 ## [0.11.0] — 2026-07-09
 ### Added
 - **Cloud backup & restore**: shared settings (anniversaries, dates,
