@@ -1,4 +1,6 @@
-export type Lang = "ja" | "en" | "es";
+import { EXTRA_DICTS, type ExtraLang } from "./dict-extra";
+
+export type Lang = "ja" | "en" | "es" | ExtraLang;
 
 export interface Dict {
   locale: string;
@@ -80,7 +82,7 @@ export interface Dict {
   language: string;
 }
 
-export const DICTS: Record<Lang, Dict> = {
+const CORE: Record<"ja" | "en" | "es", Dict> = {
   ja: {
     locale: "ja-JP",
     title: "ふたりの時間", subtitle: "東京とサンティアゴ、同じ空のダッシュボード",
@@ -490,3 +492,26 @@ export const DICTS: Record<Lang, Dict> = {
     citiesPromptCta: "Elegir ciudades",
   },
 };
+
+// Extra languages override the English base, so a missing key can never
+// break the build — it just falls back to English.
+export const DICTS: Record<Lang, Dict> = {
+  ...CORE,
+  ...(Object.fromEntries(
+    (Object.keys(EXTRA_DICTS) as ExtraLang[]).map(k => [k, { ...CORE.en, ...EXTRA_DICTS[k] }]),
+  ) as Record<ExtraLang, Dict>),
+};
+
+export const LANG_OPTIONS: { id: Lang; label: string }[] = [
+  { id: "ja", label: "日本語" },
+  { id: "en", label: "English" },
+  { id: "es", label: "Español" },
+  { id: "zh", label: "简体中文" },
+  { id: "yue", label: "廣東話" },
+  { id: "ko", label: "한국어" },
+  { id: "fr", label: "Français" },
+  { id: "it", label: "Italiano" },
+  { id: "pt", label: "Português" },
+  { id: "ms", label: "Bahasa Melayu" },
+  { id: "hi", label: "हिन्दी" },
+];

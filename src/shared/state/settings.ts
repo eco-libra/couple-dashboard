@@ -2,7 +2,7 @@
 // Key and shape are compatible with v0 so existing devices keep their data.
 
 import { useSyncExternalStore } from "react";
-import type { Lang } from "../i18n/dict";
+import { DICTS, type Lang } from "../i18n/dict";
 import { uploadTextRecord, fetchTextRecord } from "../services/cloudinary";
 
 export interface Anniversary { name: string; date: string }
@@ -41,7 +41,7 @@ function load(): Settings {
   try {
     const s = { ...DEFAULTS, ...JSON.parse(localStorage.getItem(LS_KEY) ?? "{}") };
     if (!Array.isArray(s.annivs)) s.annivs = [];
-    if (!["ja", "en", "es"].includes(s.lang)) s.lang = "ja";
+    if (!(s.lang in DICTS)) s.lang = "ja";
     return s;
   } catch {
     return { ...DEFAULTS };

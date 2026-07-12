@@ -7,11 +7,7 @@ import { useCoupleScope } from "../../shared/state/scope";
 import { CityPicker } from "./CityPicker";
 import { flagEmoji } from "../../shared/cityPair";
 
-const LANGS: { id: Lang; label: string }[] = [
-  { id: "ja", label: "日本語" },
-  { id: "en", label: "EN" },
-  { id: "es", label: "ES" },
-];
+import { LANG_OPTIONS } from "../../shared/i18n/dict";
 
 export function MorePage() {
   const t = useT();
@@ -65,13 +61,11 @@ export function MorePage() {
 
       <section className="card">
         <p className="label">{t.language}</p>
-        <div className="lang-switch">
-          {LANGS.map(l => (
-            <button key={l.id} className={s.lang === l.id ? "active" : ""} onClick={() => setLang(l.id)}>
-              {l.label}
-            </button>
+        <select value={s.lang} onChange={e => setLang(e.target.value as Lang)}>
+          {LANG_OPTIONS.map(l => (
+            <option key={l.id} value={l.id}>{l.label}</option>
           ))}
-        </div>
+        </select>
       </section>
 
       <section className="card">
