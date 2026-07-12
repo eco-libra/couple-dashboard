@@ -1,22 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { listMedia, imageUrl, videoUrl, videoThumbUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
+import { useCoupleScope } from "../../shared/state/scope";
+import { listMemories2, uploadMedia2 } from "../../shared/services/media2";
 
 export function MemoriesPage() {
   const t = useT();
+  const scope = useCoupleScope();
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [idx, setIdx] = useState(-1);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const reload = () => listMedia().then(m => {
-    m.sort((a, b) => b.version - a.version); // newest first for the gallery
-    setMedia(m);
-    setIdx(m.length ? Math.floor(Math.random() * m.length) : -1);
-  });
+  const reload = () => {
+    const load = scope ? listMemories2(scope) : listMedia();
+    void load.then(m => {
+      m.sort((a, b) => b.version - a.version); // newest first for the gallery
+      setMedia(m);
+      setIdx(m.length ? Math.floor(Math.random() * m.length) : -1);
+    });
+  };
 
-  useEffect(() => { reload(); }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { reload(); }, [scope?.coupleId]);
 
   const next = () => {
     if (media.length < 2) return;
@@ -29,11 +36,15 @@ export function MemoriesPage() {
     if (!files?.length) return;
     setBusy(true);
     const list = [...files];
-    const ok = await uploadMedia(list, (done, total) => setMsg(`${t.memUploading} ${done}/${total}`));
+    const progress = (done: number, total: number) => setMsg(`${t.memUploading} ${done}/${total}`);
+    const ok = scope
+      ? await uploadMedia2(scope, list, "memory", undefined, progress)
+      : await uploadMedia(list, progress);
     setMsg(ok === list.length ? t.memUploaded : `${t.memFailed} (${ok}/${list.length})`);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
-    setTimeout(reload, 2500); // CDN list cache lags briefly behind uploads
+    if (scope) reload();                 // metadata in Supabase — instant
+    else setTimeout(reload, 2500);       // legacy list.json lags behind uploads
   };
 
   const m = idx >= 0 ? media[idx] : null;

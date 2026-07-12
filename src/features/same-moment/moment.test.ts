@@ -30,6 +30,21 @@ describe("moment buckets", () => {
   });
 });
 
+describe("streak from day rows (v2)", async () => {
+  const { streakFromDays } = await import("./streak");
+  const rows = (pairs: [string, "A" | "B"][]) => pairs.map(([day_key, side]) => ({ day_key, side }));
+  it("counts consecutive both-posted days; incomplete today doesn't break it", () => {
+    const r = rows([
+      ["20260711", "A"], ["20260711", "B"],
+      ["20260710", "A"], ["20260710", "B"],
+      ["20260709", "A"], // B missing → chain ends before this
+    ]);
+    expect(streakFromDays(r, "20260712")).toBe(2); // today incomplete, still 2
+    expect(streakFromDays([...r, { day_key: "20260712", side: "A" }, { day_key: "20260712", side: "B" }], "20260712")).toBe(3);
+    expect(streakFromDays([], "20260712")).toBe(0);
+  });
+});
+
 describe("day key arithmetic", () => {
   it("shifts across month and year boundaries", () => {
     expect(shiftDayKey("20260301", -1)).toBe("20260228");

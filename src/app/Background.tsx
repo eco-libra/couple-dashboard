@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { listMedia, imageUrl, type MediaItem } from "../shared/services/cloudinary";
+import { useCoupleScope } from "../shared/state/scope";
+import { listMemories2 } from "../shared/services/media2";
 
 const SLIDE_MS = 14000;
 
@@ -14,13 +16,15 @@ interface SlideState {
 
 /** Full-screen ambient slideshow of the couple's photos, behind every page. */
 export function Background() {
+  const scope = useCoupleScope();
   const [imgs, setImgs] = useState<MediaItem[]>([]);
   const [state, setState] = useState<SlideState>({ active: 0, slots: [null, null] });
   const pos = useRef(0);
 
   useEffect(() => {
-    listMedia().then(all => setImgs(shuffle(all.filter(m => m.rtype === "image"))));
-  }, []);
+    const load = scope ? listMemories2(scope) : listMedia();
+    void load.then(all => setImgs(shuffle(all.filter(m => m.rtype === "image"))));
+  }, [scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!imgs.length) return;

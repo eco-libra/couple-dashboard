@@ -6,6 +6,7 @@
 
 import { listMediaByTag } from "../../shared/services/cloudinary";
 import { momentTag, shiftDayKey } from "./moment";
+// (streakFromDays below is the v2 pure variant; computeStreak is legacy)
 
 const LS_KEY = "futari-streak-v1";
 const MAX_LOOKBACK = 60;
@@ -18,6 +19,24 @@ async function dayComplete(dayKey: string): Promise<boolean> {
     listMediaByTag(momentTag(dayKey, "B")),
   ]);
   return a.length > 0 && b.length > 0;
+}
+
+/** v2: streak from a list of (day_key, side) rows — pure. */
+export function streakFromDays(
+  rows: { day_key: string; side: "A" | "B" }[],
+  todayKey: string,
+): number {
+  const bySide = { A: new Set<string>(), B: new Set<string>() };
+  for (const r of rows) bySide[r.side].add(r.day_key);
+  const complete = (k: string) => bySide.A.has(k) && bySide.B.has(k);
+  let streak = complete(todayKey) ? 1 : 0;
+  let key = shiftDayKey(todayKey, -1);
+  for (let i = 0; i < 365; i++) {
+    if (!complete(key)) break;
+    streak++;
+    key = shiftDayKey(key, -1);
+  }
+  return streak;
 }
 
 export async function computeStreak(todayKey: string): Promise<number> {

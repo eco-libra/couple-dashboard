@@ -7,7 +7,10 @@ import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from 
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
 import { notifyPartner } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
-import { computeStreak } from "./streak";
+import { useCoupleScope } from "../../shared/state/scope";
+import { listMoments2, uploadMedia2 } from "../../shared/services/media2";
+import { computeStreak, streakFromDays } from "./streak";
+import { momentDays2 } from "../../shared/services/media2";
 
 const MAX_PAST_DAYS = 30;
 
@@ -57,6 +60,7 @@ export function SameMomentPage() {
   const t = useT();
   const s = useSettings();
   const now = useNow(60000);
+  const scope = useCoupleScope();
   const [photosA, setPhotosA] = useState<Map<number, MediaItem>>(new Map());
   const [photosB, setPhotosB] = useState<Map<number, MediaItem>>(new Map());
   const [msg, setMsg] = useState("");
@@ -67,23 +71,33 @@ export function SameMomentPage() {
 
   const todayKey = momentDayKey(now);
   const dayKey = shiftDayKey(todayKey, -dayOffset);
-  const role = s.role;
+  const role = scope ? scope.side : s.role;
   const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
   const currentHour = zoneClock(TZ_A, now).hour;
 
   const reload = useCallback(async () => {
+    if (scope) {
+      const rows = await listMoments2(scope, dayKey);
+      setPhotosA(bucketByTokyoHour(rows.filter(r => r.side === "A")));
+      setPhotosB(bucketByTokyoHour(rows.filter(r => r.side === "B")));
+      return;
+    }
     const [a, b] = await Promise.all([
       listMediaByTag(momentTag(dayKey, "A")),
       listMediaByTag(momentTag(dayKey, "B")),
     ]);
     setPhotosA(bucketByTokyoHour(a));
     setPhotosB(bucketByTokyoHour(b));
-  }, [dayKey]);
+  }, [dayKey, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { reload(); }, [reload]);
   useEffect(() => {
-    if (s.role) computeStreak(todayKey).then(setStreak);
-  }, [todayKey, s.role]);
+    if (scope) {
+      void momentDays2(scope).then(days => setStreak(streakFromDays(days, todayKey)));
+    } else if (s.role) {
+      void computeStreak(todayKey).then(setStreak);
+    }
+  }, [todayKey, s.role, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!role) {
     return (
@@ -100,13 +114,16 @@ export function SameMomentPage() {
     if (f.size > MAX_BYTES) { setMsg(t.memTooBig); setTimeout(() => setMsg(""), 4000); return; }
     setBusy(true);
     setMsg(t.memUploading);
-    const ok = await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
+    const ok = scope
+      ? await uploadMedia2(scope, [f], "moment", todayKey)
+      : await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
     setDayOffset(0); // uploads always belong to today — jump back to it
-    if (ok) notifyPartner("moment", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
+    if (ok && !scope) notifyPartner("moment", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
-    setTimeout(reload, 2500); // CDN list cache lags briefly
+    if (scope) void reload();
+    else setTimeout(reload, 2500); // legacy CDN list cache lags briefly
   };
 
   const isToday = dayOffset === 0;
