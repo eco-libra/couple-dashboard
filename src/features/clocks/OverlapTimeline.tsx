@@ -2,7 +2,7 @@ import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings } from "../../shared/state/settings";
 import {
-  TZ_A, TZ_B, zoneClock, zoneDiffMin, awakeSegments, intersectSegments,
+  zoneClock, zoneDiffMin, awakeSegments, intersectSegments,
   overlapStatus, fmtHM,
 } from "../../shared/time/tz";
 
@@ -10,8 +10,8 @@ export function OverlapSummary(): string {
   const t = useT();
   const now = useNow();
   const s = useSettings();
-  const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
-  const nowA = zoneClock(TZ_A, now).minuteOfDay;
+  const diffBA = zoneDiffMin(s.tzA, s.tzB, now);
+  const nowA = zoneClock(s.tzA, now).minuteOfDay;
   const st = overlapStatus(nowA, s.wakeA, s.sleepA, s.wakeB, s.sleepB, diffBA);
   if (st.kind === "now") return t.canTalk(Math.floor(st.remainingMin / 60), st.remainingMin % 60);
   if (st.kind === "next") return t.nextTalk(fmtHM(st.startA), fmtHM(st.startB));
@@ -22,8 +22,8 @@ export function OverlapTimeline() {
   const t = useT();
   const now = useNow();
   const s = useSettings();
-  const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
-  const nowA = zoneClock(TZ_A, now).minuteOfDay;
+  const diffBA = zoneDiffMin(s.tzA, s.tzB, now);
+  const nowA = zoneClock(s.tzA, now).minuteOfDay;
   const A = awakeSegments(s.wakeA, s.sleepA, 0);
   const B = awakeSegments(s.wakeB, s.sleepB, diffBA);
   const both = intersectSegments(A, B);
@@ -42,7 +42,7 @@ export function OverlapTimeline() {
         </div>
         <div className="tl-now" data-label={t.now} style={{ left: `calc(${(nowA / 1440) * 100}% - 1px)` }} />
         <div className="tl-hours">
-          {[0, 6, 12, 18, 24].map(h => <span key={h}>{t.hourAxis(h)}</span>)}
+          {[0, 6, 12, 18, 24].map(h => <span key={h}>{t.hourAxis(h, s.cityA)}</span>)}
         </div>
       </div>
       <div className="legend">

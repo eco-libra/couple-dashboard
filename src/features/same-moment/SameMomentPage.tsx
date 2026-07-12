@@ -2,12 +2,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "../../shared/i18n";
 import { useNow } from "../../shared/time/useNow";
 import { useSettings, updateSettings } from "../../shared/state/settings";
-import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
+import { zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
-import { notifyPartner } from "../../shared/services/push";
+import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
-import { computeStreak } from "./streak";
+import { flagEmoji } from "../../shared/cityPair";
+import { useCoupleScope } from "../../shared/state/scope";
+import { listMoments2, uploadMedia2 } from "../../shared/services/media2";
+import { computeStreak, streakFromDays } from "./streak";
+import { momentDays2 } from "../../shared/services/media2";
 
 const MAX_PAST_DAYS = 30;
 
@@ -15,12 +19,13 @@ const MAX_BYTES = 25 * 1024 * 1024;
 
 function RolePicker() {
   const t = useT();
+  const s = useSettings();
   return (
     <section className="card">
       <p className="label">{t.rolePick}</p>
       <div className="row">
-        <button onClick={() => updateSettings({ role: "A" })}>🗼 {t.tokyo}</button>
-        <button onClick={() => updateSettings({ role: "B" })}>🏔️ {t.santiago}</button>
+        <button onClick={() => updateSettings({ role: "A" })}>{flagEmoji(s.ccA)} {s.cityA}</button>
+        <button onClick={() => updateSettings({ role: "B" })}>{flagEmoji(s.ccB)} {s.cityB}</button>
       </div>
       <p className="muted" style={{ marginTop: 8 }}>{t.roleNote}</p>
     </section>
@@ -57,6 +62,7 @@ export function SameMomentPage() {
   const t = useT();
   const s = useSettings();
   const now = useNow(60000);
+  const scope = useCoupleScope();
   const [photosA, setPhotosA] = useState<Map<number, MediaItem>>(new Map());
   const [photosB, setPhotosB] = useState<Map<number, MediaItem>>(new Map());
   const [msg, setMsg] = useState("");
@@ -65,25 +71,35 @@ export function SameMomentPage() {
   const [streak, setStreak] = useState(0);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const todayKey = momentDayKey(now);
+  const todayKey = momentDayKey(now, s.tzA);
   const dayKey = shiftDayKey(todayKey, -dayOffset);
-  const role = s.role;
-  const diffBA = zoneDiffMin(TZ_A, TZ_B, now);
-  const currentHour = zoneClock(TZ_A, now).hour;
+  const role = scope ? scope.side : s.role;
+  const diffBA = zoneDiffMin(s.tzA, s.tzB, now);
+  const currentHour = zoneClock(s.tzA, now).hour;
 
   const reload = useCallback(async () => {
+    if (scope) {
+      const rows = await listMoments2(scope, dayKey);
+      setPhotosA(bucketByTokyoHour(rows.filter(r => r.side === "A"), s.tzA));
+      setPhotosB(bucketByTokyoHour(rows.filter(r => r.side === "B"), s.tzA));
+      return;
+    }
     const [a, b] = await Promise.all([
       listMediaByTag(momentTag(dayKey, "A")),
       listMediaByTag(momentTag(dayKey, "B")),
     ]);
-    setPhotosA(bucketByTokyoHour(a));
-    setPhotosB(bucketByTokyoHour(b));
-  }, [dayKey]);
+    setPhotosA(bucketByTokyoHour(a, s.tzA));
+    setPhotosB(bucketByTokyoHour(b, s.tzA));
+  }, [dayKey, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { reload(); }, [reload]);
   useEffect(() => {
-    if (s.role) computeStreak(todayKey).then(setStreak);
-  }, [todayKey, s.role]);
+    if (scope) {
+      void momentDays2(scope).then(days => setStreak(streakFromDays(days, todayKey)));
+    } else if (s.role) {
+      void computeStreak(todayKey).then(setStreak);
+    }
+  }, [todayKey, s.role, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!role) {
     return (
@@ -100,13 +116,18 @@ export function SameMomentPage() {
     if (f.size > MAX_BYTES) { setMsg(t.memTooBig); setTimeout(() => setMsg(""), 4000); return; }
     setBusy(true);
     setMsg(t.memUploading);
-    const ok = await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
+    const ok = scope
+      ? await uploadMedia2(scope, [f], "moment", todayKey)
+      : await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
     setDayOffset(0); // uploads always belong to today — jump back to it
-    if (ok) notifyPartner("moment", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
+    const myName = role === "A" ? s.nameA : s.nameB;
+    if (ok && scope) notifyPartner2(scope, "moment", myName);
+    else if (ok) notifyPartner("moment", role === "A" ? "B" : "A", myName);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
-    setTimeout(reload, 2500); // CDN list cache lags briefly
+    if (scope) void reload();
+    else setTimeout(reload, 2500); // legacy CDN list cache lags briefly
   };
 
   const isToday = dayOffset === 0;
@@ -156,8 +177,8 @@ export function SameMomentPage() {
           }
           return (
             <div key={h} className="feed-row">
-              <FeedSlot item={a} tz={TZ_A} emoji={dispA.emoji} hourLocalHM={tokyoHM} asleep={asleepA} />
-              <FeedSlot item={b} tz={TZ_B} emoji={dispB.emoji} hourLocalHM={chileHM} asleep={asleepB} />
+              <FeedSlot item={a} tz={s.tzA} emoji={dispA.emoji} hourLocalHM={tokyoHM} asleep={asleepA} />
+              <FeedSlot item={b} tz={s.tzB} emoji={dispB.emoji} hourLocalHM={chileHM} asleep={asleepB} />
             </div>
           );
         })}

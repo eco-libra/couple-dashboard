@@ -1,7 +1,8 @@
 // Web Push subscription (client side). Subscriptions are stored in Supabase
 // keyed by side; /api/notify sends pushes to the partner's devices.
 
-import { SUPABASE_URL, SUPABASE_ANON } from "./supabase";
+import { SUPABASE_URL, SUPABASE_ANON, sb } from "./supabase";
+import type { CoupleScope } from "../state/scope";
 
 const VAPID_PUBLIC =
   "BJsEqBIK1xPEk8i-8_PbR9uCEGX-DFSbhFs1XUcsSDb48mzX_s-YeG274RHGMmKxAh75xRq5lzR9cpHpj1GiI3I";
@@ -46,6 +47,46 @@ export async function enablePush(role: "A" | "B"): Promise<PushSetupResult> {
   } catch {
     return "error";
   }
+}
+
+/** v2: subscribe this device for a paired couple (push_subs_v2, RLS). */
+export async function enablePush2(scope: CoupleScope): Promise<PushSetupResult> {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+    return "unsupported";
+  }
+  if (Notification.permission === "denied") return "denied";
+  if ((await Notification.requestPermission()) !== "granted") return "denied";
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub =
+      (await reg.pushManager.getSubscription()) ??
+      (await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
+      }));
+    const { error } = await sb.from("push_subs_v2").upsert(
+      { couple_id: scope.coupleId, side: scope.side, endpoint: sub.endpoint, subscription: sub.toJSON() },
+      { onConflict: "endpoint" },
+    );
+    return error ? "error" : "ok";
+  } catch {
+    return "error";
+  }
+}
+
+/** v2 fire-and-forget partner notification. */
+export function notifyPartner2(scope: CoupleScope, type: "moment" | "quiz", fromName?: string): void {
+  void fetch("/api/notify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      v: 2,
+      coupleId: scope.coupleId,
+      toSide: scope.side === "A" ? "B" : "A",
+      type,
+      fromName: (fromName ?? "").trim().slice(0, 30),
+    }),
+  }).catch(() => { /* best effort */ });
 }
 
 /** Fire-and-forget: notify the partner's devices about an activity. */

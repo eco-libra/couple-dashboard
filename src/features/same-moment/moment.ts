@@ -5,9 +5,9 @@
 import { TZ_A, zoneClock, awakeSegments, mod1440 } from "../../shared/time/tz";
 import type { MediaItem } from "../../shared/services/cloudinary";
 
-export function momentDayKey(now: Date): string {
-  // en-CA gives YYYY-MM-DD
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ_A, dateStyle: "short" })
+export function momentDayKey(now: Date, tz: string = TZ_A): string {
+  // en-CA gives YYYY-MM-DD. The day anchor is side A's timezone.
+  return new Intl.DateTimeFormat("en-CA", { timeZone: tz, dateStyle: "short" })
     .format(now).replace(/-/g, "");
 }
 
@@ -27,16 +27,16 @@ export function dayKeyToDate(dayKey: string): Date {
   return new Date(+dayKey.slice(0, 4), +dayKey.slice(4, 6) - 1, +dayKey.slice(6, 8));
 }
 
-/** Tokyo hour (0-23) of the instant a media item was uploaded. */
-export function tokyoHourOf(item: MediaItem): number {
-  return zoneClock(TZ_A, new Date(item.version * 1000)).hour;
+/** Anchor-timezone hour (0-23) of the instant a media item was uploaded. */
+export function tokyoHourOf(item: MediaItem, tz: string = TZ_A): number {
+  return zoneClock(tz, new Date(item.version * 1000)).hour;
 }
 
-/** Latest photo per Tokyo hour. */
-export function bucketByTokyoHour(items: MediaItem[]): Map<number, MediaItem> {
+/** Latest photo per anchor-timezone hour. */
+export function bucketByTokyoHour(items: MediaItem[], tz: string = TZ_A): Map<number, MediaItem> {
   const out = new Map<number, MediaItem>();
   for (const it of items) {
-    const h = tokyoHourOf(it);
+    const h = tokyoHourOf(it, tz);
     const prev = out.get(h);
     if (!prev || it.version > prev.version) out.set(h, it);
   }

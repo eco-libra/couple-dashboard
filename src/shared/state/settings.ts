@@ -21,6 +21,9 @@ export interface Settings {
   /** Profile (shared): display names and avatar emoji per side. */
   nameA: string; nameB: string;
   emojiA: string; emojiB: string;
+  /** Cities (shared): each side's home city, timezone, coords, country. */
+  cityA: string; tzA: string; latA: number; lonA: number; ccA: string;
+  cityB: string; tzB: string; latB: number; lonB: number; ccB: string;
 }
 
 const LS_KEY = "futari-dash-v1";
@@ -30,6 +33,8 @@ const DEFAULTS: Settings = {
   wakeB: "07:00", sleepB: "23:30",
   meet: "", start: "", annivs: [], lang: "ja", role: "", notif: false,
   nameA: "", nameB: "", emojiA: "", emojiB: "",
+  cityA: "東京", tzA: "Asia/Tokyo", latA: 35.68, lonA: 139.69, ccA: "JP",
+  cityB: "Santiago", tzB: "America/Santiago", latB: -33.45, lonB: -70.66, ccB: "CL",
 };
 
 function load(): Settings {
@@ -66,10 +71,25 @@ export function useSettings(): Settings {
 
 // ---- share-link sync (settings encoded in URL hash) ----
 
-const SHARE_KEYS = [
+export const SHARE_KEYS = [
   "wakeA", "sleepA", "wakeB", "sleepB", "meet", "start", "annivs",
   "nameA", "nameB", "emojiA", "emojiB",
+  "cityA", "tzA", "latA", "lonA", "ccA",
+  "cityB", "tzB", "latB", "lonB", "ccB",
 ] as const;
+
+/** Subscribe to settings changes (returns unsubscribe). */
+export function subscribeSettings(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+/** Shared-keys slice of the current settings. */
+export function sharedSlice(): Record<string, unknown> {
+  const o: Record<string, unknown> = {};
+  SHARE_KEYS.forEach(k => (o[k] = current[k]));
+  return o;
+}
 
 export function encodeShare(): string {
   const o: Record<string, unknown> = {};

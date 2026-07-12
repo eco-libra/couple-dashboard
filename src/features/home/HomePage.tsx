@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { useT } from "../../shared/i18n";
 import { useSettings } from "../../shared/state/settings";
-import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
 import { sideDisplay } from "../../shared/profile";
 import { OverlapSummary } from "../clocks/OverlapTimeline";
 import { ReunionCountdown, TogetherDays } from "../milestones/MilestonesPage";
 import { RateCard } from "../context/RateCard";
+import { WelcomeCard } from "./WelcomeCard";
 import { HolidaysCard } from "../context/HolidaysCard";
 
 export function HomePage() {
@@ -20,12 +20,14 @@ export function HomePage() {
         <p className="page-sub">{t.subtitle}</p>
       </header>
 
+      <WelcomeCard />
+
       <Link to="/clocks" style={{ textDecoration: "none", color: "inherit" }}>
         <section className="cities">
-          <CityCard tz={TZ_A} name={sideDisplay(s, t, "A").name} emoji={sideDisplay(s, t, "A").emoji}
-            wake={s.wakeA} sleep={s.sleepA} />
-          <CityCard tz={TZ_B} name={sideDisplay(s, t, "B").name} emoji={sideDisplay(s, t, "B").emoji}
-            wake={s.wakeB} sleep={s.sleepB} />
+          <CityCard tz={s.tzA} lat={s.latA} lon={s.lonA} name={sideDisplay(s, t, "A").name}
+            emoji={sideDisplay(s, t, "A").emoji} wake={s.wakeA} sleep={s.sleepA} />
+          <CityCard tz={s.tzB} lat={s.latB} lon={s.lonB} name={sideDisplay(s, t, "B").name}
+            emoji={sideDisplay(s, t, "B").emoji} wake={s.wakeB} sleep={s.sleepB} />
         </section>
       </Link>
 

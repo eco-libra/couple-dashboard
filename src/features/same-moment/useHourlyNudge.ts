@@ -11,7 +11,7 @@
 import { useEffect } from "react";
 import { useSettings } from "../../shared/state/settings";
 import { useT } from "../../shared/i18n";
-import { TZ_A, TZ_B, zoneClock, awakeSegments } from "../../shared/time/tz";
+import { zoneClock, awakeSegments } from "../../shared/time/tz";
 
 const FIRED_KEY = "futari-nudge-fired";
 
@@ -59,7 +59,7 @@ export function useHourlyNudge(): void {
       const now = new Date();
       if (now.getMinutes() !== 0) return;
 
-      const tz = s.role === "A" ? TZ_A : TZ_B;
+      const tz = s.role === "A" ? s.tzA : s.tzB;
       const wake = s.role === "A" ? s.wakeA : s.wakeB;
       const sleep = s.role === "A" ? s.sleepA : s.sleepB;
       const local = zoneClock(tz, now);

@@ -2,7 +2,10 @@ import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
 import { useSettings, updateSettings, encodeShare, restoreFromCloud } from "../../shared/state/settings";
 import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
-import { enablePush } from "../../shared/services/push";
+import { enablePush, enablePush2 } from "../../shared/services/push";
+import { useCoupleScope } from "../../shared/state/scope";
+import { CityPicker } from "./CityPicker";
+import { flagEmoji } from "../../shared/cityPair";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -13,15 +16,16 @@ const LANGS: { id: Lang; label: string }[] = [
 export function MorePage() {
   const t = useT();
   const s = useSettings();
+  const scope = useCoupleScope();
   const [shareMsg, setShareMsg] = useState("");
   const [restoreMsg, setRestoreMsg] = useState("");
   const [pushMsg, setPushMsg] = useState(() =>
     localStorage.getItem("futari-push-ok") === "1" ? "✓" : "");
 
   const setupPush = async () => {
-    if (!s.role) { alert(t.pushNeedRole); return; }
+    if (!scope && !s.role) { alert(t.pushNeedRole); return; }
     setPushMsg("…");
-    const r = await enablePush(s.role);
+    const r = scope ? await enablePush2(scope) : await enablePush(s.role as "A" | "B");
     if (r === "ok") {
       localStorage.setItem("futari-push-ok", "1");
       setPushMsg(t.pushDone);
@@ -54,6 +58,11 @@ export function MorePage() {
     <main className="page">
       <h1 className="page-title">{t.navMore}</h1>
 
+      <a className="card" href="/account" style={{ textDecoration: "none" }}>
+        <p className="label">👤 {t.accTitle}</p>
+        <p className="muted" style={{ margin: 0 }}>{t.accMoreHint} →</p>
+      </a>
+
       <section className="card">
         <p className="label">{t.language}</p>
         <div className="lang-switch">
@@ -68,21 +77,23 @@ export function MorePage() {
       <section className="card">
         <p className="label">{t.profileLabel}</p>
         <div className="set-grid">
-          <span>🗼 {t.profileName}</span>
-          <input type="text" maxLength={20} value={s.nameA} placeholder={t.tokyo}
+          <span>{flagEmoji(s.ccA)} {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameA} placeholder={s.cityA}
             onChange={e => updateSettings({ nameA: e.target.value })} />
           <span>{t.profileEmoji}</span>
-          <input type="text" maxLength={4} value={s.emojiA} placeholder="🗼"
+          <input type="text" maxLength={4} value={s.emojiA} placeholder={flagEmoji(s.ccA)}
             onChange={e => updateSettings({ emojiA: e.target.value })} />
-          <span>🏔️ {t.profileName}</span>
-          <input type="text" maxLength={20} value={s.nameB} placeholder={t.santiago}
+          <span>{flagEmoji(s.ccB)} {t.profileName}</span>
+          <input type="text" maxLength={20} value={s.nameB} placeholder={s.cityB}
             onChange={e => updateSettings({ nameB: e.target.value })} />
           <span>{t.profileEmoji}</span>
-          <input type="text" maxLength={4} value={s.emojiB} placeholder="🏔️"
+          <input type="text" maxLength={4} value={s.emojiB} placeholder={flagEmoji(s.ccB)}
             onChange={e => updateSettings({ emojiB: e.target.value })} />
         </div>
         <p className="muted" style={{ marginTop: 10 }}>{t.profileNote}</p>
       </section>
+
+      <CityPicker />
 
       <section className="card">
         <p className="label">{t.settings}</p>
@@ -134,8 +145,8 @@ export function MorePage() {
         <p className="label">{t.backupLabel}</p>
         <p className="muted" style={{ margin: "0 0 10px" }}>{t.backupNote}</p>
         <div className="row">
-          <button onClick={() => restore("A")}>🗼 {t.restoreA}</button>
-          <button onClick={() => restore("B")}>🏔️ {t.restoreB}</button>
+          <button onClick={() => restore("A")}>{flagEmoji(s.ccA)} {t.restoreA}</button>
+          <button onClick={() => restore("B")}>{flagEmoji(s.ccB)} {t.restoreB}</button>
           <span className="muted">{restoreMsg}</span>
         </div>
       </section>
