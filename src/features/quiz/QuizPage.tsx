@@ -5,7 +5,7 @@ import { useSettings, updateSettings } from "../../shared/state/settings";
 import { uploadTextRecord, fetchTextRecord } from "../../shared/services/cloudinary";
 import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
-import { notifyPartner } from "../../shared/services/push";
+import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
 import { useCoupleScope } from "../../shared/state/scope";
 import { saveQuizAnswer2, fetchQuizAnswers2 } from "../../shared/services/couple-data";
@@ -120,7 +120,8 @@ export function QuizPage() {
       setMine(answers);
       localStorage.setItem(localKey, JSON.stringify(answers));
       setMsg("");
-      if (!scope) notifyPartner("quiz", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
+      if (scope) notifyPartner2(scope, "quiz", role === "A" ? s.nameA : s.nameB);
+      else notifyPartner("quiz", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
       if (scope) void loadTheirs();
       else setTimeout(loadTheirs, 2500);
     } else {

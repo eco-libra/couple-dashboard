@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useT, setLang, type Lang } from "../../shared/i18n";
 import { useSettings, updateSettings, encodeShare, restoreFromCloud } from "../../shared/state/settings";
 import { enableNotifications, notifStatus, showNotification } from "../same-moment/useHourlyNudge";
-import { enablePush } from "../../shared/services/push";
+import { enablePush, enablePush2 } from "../../shared/services/push";
+import { useCoupleScope } from "../../shared/state/scope";
 
 const LANGS: { id: Lang; label: string }[] = [
   { id: "ja", label: "日本語" },
@@ -13,15 +14,16 @@ const LANGS: { id: Lang; label: string }[] = [
 export function MorePage() {
   const t = useT();
   const s = useSettings();
+  const scope = useCoupleScope();
   const [shareMsg, setShareMsg] = useState("");
   const [restoreMsg, setRestoreMsg] = useState("");
   const [pushMsg, setPushMsg] = useState(() =>
     localStorage.getItem("futari-push-ok") === "1" ? "✓" : "");
 
   const setupPush = async () => {
-    if (!s.role) { alert(t.pushNeedRole); return; }
+    if (!scope && !s.role) { alert(t.pushNeedRole); return; }
     setPushMsg("…");
-    const r = await enablePush(s.role);
+    const r = scope ? await enablePush2(scope) : await enablePush(s.role as "A" | "B");
     if (r === "ok") {
       localStorage.setItem("futari-push-ok", "1");
       setPushMsg(t.pushDone);

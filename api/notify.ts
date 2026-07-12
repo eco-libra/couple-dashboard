@@ -38,9 +38,15 @@ export default async function handler(req: any, res: any) {
     return res.status(503).json({ error: "not_configured" });
   }
 
-  const { type, toRole, fromName } = req.body ?? {};
+  const { type, toRole, fromName, v, coupleId, toSide } = req.body ?? {};
   const msg = message(String(type), String(fromName ?? "").slice(0, 30));
-  if (!msg || !["A", "B"].includes(toRole)) {
+  const isV2 = v === 2;
+  if (!msg) return res.status(400).json({ error: "bad_input" });
+  if (isV2) {
+    if (!/^[0-9a-f-]{36}$/.test(String(coupleId)) || !["A", "B"].includes(toSide)) {
+      return res.status(400).json({ error: "bad_input" });
+    }
+  } else if (!["A", "B"].includes(toRole)) {
     return res.status(400).json({ error: "bad_input" });
   }
 
@@ -48,7 +54,9 @@ export default async function handler(req: any, res: any) {
     apikey: SUPABASE_SERVICE_ROLE_KEY,
     Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
   };
-  const listUrl = `${SUPABASE_URL}/rest/v1/push_subscriptions?role=eq.${toRole}&select=endpoint,subscription`;
+  const listUrl = isV2
+    ? `${SUPABASE_URL}/rest/v1/push_subs_v2?couple_id=eq.${coupleId}&side=eq.${toSide}&select=endpoint,subscription`
+    : `${SUPABASE_URL}/rest/v1/push_subscriptions?role=eq.${toRole}&select=endpoint,subscription`;
   const listRes = await fetch(listUrl, { headers: sbHeaders });
   if (!listRes.ok) return res.status(502).json({ error: "db" });
   const rows: { endpoint: string; subscription: webpush.PushSubscription }[] = await listRes.json();
@@ -71,8 +79,9 @@ export default async function handler(req: any, res: any) {
         const status = (e as { statusCode?: number }).statusCode;
         if (status === 404 || status === 410) {
           // subscription expired — clean it up
+          const table = isV2 ? "push_subs_v2" : "push_subscriptions";
           await fetch(
-            `${SUPABASE_URL}/rest/v1/push_subscriptions?endpoint=eq.${encodeURIComponent(row.endpoint)}`,
+            `${SUPABASE_URL}/rest/v1/${table}?endpoint=eq.${encodeURIComponent(row.endpoint)}`,
             { method: "DELETE", headers: sbHeaders },
           ).catch(() => {});
         }

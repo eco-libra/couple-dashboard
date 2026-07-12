@@ -5,7 +5,7 @@ import { useSettings, updateSettings } from "../../shared/state/settings";
 import { TZ_A, TZ_B, zoneClock, zoneDiffMin, fmtHM, mod1440 } from "../../shared/time/tz";
 import { listMediaByTag, imageUrl, videoUrl, uploadMedia, type MediaItem } from "../../shared/services/cloudinary";
 import { momentDayKey, momentTag, bucketByTokyoHour, asleepAtTokyoHour, shiftDayKey, dayKeyToDate } from "./moment";
-import { notifyPartner } from "../../shared/services/push";
+import { notifyPartner, notifyPartner2 } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
 import { useCoupleScope } from "../../shared/state/scope";
 import { listMoments2, uploadMedia2 } from "../../shared/services/media2";
@@ -118,7 +118,9 @@ export function SameMomentPage() {
       ? await uploadMedia2(scope, [f], "moment", todayKey)
       : await uploadMedia([f], undefined, [momentTag(todayKey, role)]);
     setDayOffset(0); // uploads always belong to today — jump back to it
-    if (ok && !scope) notifyPartner("moment", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
+    const myName = role === "A" ? s.nameA : s.nameB;
+    if (ok && scope) notifyPartner2(scope, "moment", myName);
+    else if (ok) notifyPartner("moment", role === "A" ? "B" : "A", myName);
     setMsg(ok ? t.memUploaded : t.memFailed);
     setBusy(false);
     setTimeout(() => setMsg(""), 3000);
