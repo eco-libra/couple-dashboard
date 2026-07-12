@@ -7,6 +7,8 @@ import { momentDayKey, shiftDayKey, dayKeyToDate } from "../same-moment/moment";
 import { testForDay, fillReveal, resolveAnswers, quizTag } from "./tests";
 import { notifyPartner } from "../../shared/services/push";
 import { sideDisplay } from "../../shared/profile";
+import { useCoupleScope } from "../../shared/state/scope";
+import { saveQuizAnswer2, fetchQuizAnswers2 } from "../../shared/services/couple-data";
 
 const MAX_PAST_DAYS = 30;
 
@@ -27,7 +29,8 @@ export function QuizPage() {
   const dayKey = shiftDayKey(todayKey, -dayOffset);
   const isToday = dayOffset === 0;
   const test = testForDay(dayKey);
-  const role = s.role;
+  const scope = useCoupleScope();
+  const role = scope ? scope.side : s.role;
   const otherRole = role === "A" ? "B" : "A";
   const localKey = `futari-quiz-${dayKey}`;
 
@@ -49,15 +52,30 @@ export function QuizPage() {
 
   const loadTheirs = useCallback(async () => {
     if (!role) return;
+    if (scope) {
+      const both = await fetchQuizAnswers2(scope, dayKey);
+      if (both[otherRole]) setTheirs(both[otherRole]!);
+      return;
+    }
     const raw = await fetchTextRecord(quizTag(dayKey, otherRole));
     if (raw) {
       try { setTheirs(JSON.parse(raw).answers ?? null); } catch { /* corrupt record */ }
     }
-  }, [dayKey, role, otherRole]);
+  }, [dayKey, role, otherRole, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Also recover own answer from the cloud (e.g. answered on another device).
   useEffect(() => {
     if (!role) return;
+    if (scope) {
+      void fetchQuizAnswers2(scope, dayKey).then(both => {
+        if (both[scope.side]) {
+          setMine(both[scope.side]!);
+          localStorage.setItem(localKey, JSON.stringify(both[scope.side]));
+        }
+        if (both[otherRole]) setTheirs(both[otherRole]!);
+      });
+      return;
+    }
     if (mine) { loadTheirs(); return; }
     fetchTextRecord(quizTag(dayKey, role)).then(raw => {
       if (raw) {
@@ -71,7 +89,7 @@ export function QuizPage() {
       }
       loadTheirs();
     });
-  }, [dayKey, role, mine, localKey, loadTheirs]);
+  }, [dayKey, role, mine, localKey, loadTheirs, scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!role) {
     return (
@@ -94,14 +112,17 @@ export function QuizPage() {
     if (answers.some(a => !a)) return;
     setBusy(true);
     setMsg(t.memUploading);
-    const ok = await uploadTextRecord(quizTag(dayKey, role), JSON.stringify({ answers }));
+    const ok = scope
+      ? await saveQuizAnswer2(scope, dayKey, answers)
+      : await uploadTextRecord(quizTag(dayKey, role), JSON.stringify({ answers }));
     setBusy(false);
     if (ok) {
       setMine(answers);
       localStorage.setItem(localKey, JSON.stringify(answers));
       setMsg("");
-      notifyPartner("quiz", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
-      setTimeout(loadTheirs, 2500);
+      if (!scope) notifyPartner("quiz", role === "A" ? "B" : "A", role === "A" ? s.nameA : s.nameB);
+      if (scope) void loadTheirs();
+      else setTimeout(loadTheirs, 2500);
     } else {
       setMsg(t.memFailed);
     }

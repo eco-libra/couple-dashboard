@@ -12,6 +12,7 @@ import { MilestonesPage } from "../features/milestones/MilestonesPage";
 import { MorePage } from "../features/more/MorePage";
 import { SameMomentPage } from "../features/same-moment/SameMomentPage";
 import { useHourlyNudge } from "../features/same-moment/useHourlyNudge";
+import { useCoupleSettingsSync } from "../shared/state/settingsSync";
 import { MapPage } from "../features/map/MapPage";
 import { AiPage } from "../features/ai/AiPage";
 import { QuizPage } from "../features/quiz/QuizPage";
@@ -21,6 +22,7 @@ export function App() {
   const t = useT();
   const { lang } = useSettings();
   useHourlyNudge();
+  useCoupleSettingsSync();
 
   useEffect(() => {
     document.documentElement.lang = lang;

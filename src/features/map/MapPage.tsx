@@ -8,6 +8,8 @@ import { useNow } from "../../shared/time/useNow";
 import { useSettings } from "../../shared/state/settings";
 import { shareMyLocation, fetchLocations, type SharedLocation } from "../../shared/services/location";
 import { sideDisplay } from "../../shared/profile";
+import { useCoupleScope } from "../../shared/state/scope";
+import { shareLocation2, fetchLocations2 } from "../../shared/services/couple-data";
 import { TZ_A, TZ_B } from "../../shared/time/tz";
 import { CityCard } from "../clocks/CityCard";
 import { TOKYO, SANTIAGO, haversineKm, greatCircle, isNight, type LatLon } from "./geo";
@@ -96,7 +98,10 @@ export function MapPage() {
   const [shareMsg, setShareMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const reloadLocs = useCallback(() => { fetchLocations().then(setLocs); }, []);
+  const scope = useCoupleScope();
+  const reloadLocs = useCallback(() => {
+    void (scope ? fetchLocations2(scope) : fetchLocations()).then(setLocs);
+  }, [scope?.coupleId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { reloadLocs(); }, [reloadLocs]);
 
   const posA: LatLon = locs.A ? { lat: locs.A.lat, lon: locs.A.lon } : TOKYO;
@@ -111,10 +116,21 @@ export function MapPage() {
   }, [now, posA.lat, posA.lon, posB.lat, posB.lon, dispA.emoji, dispB.emoji]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const share = async () => {
-    if (!s.role) { alert(t.pushNeedRole); return; }
+    const side = scope ? scope.side : s.role;
+    if (!side) { alert(t.pushNeedRole); return; }
     setBusy(true);
     setShareMsg("…");
-    const r = await shareMyLocation(s.role);
+    let r: Awaited<ReturnType<typeof shareMyLocation>>;
+    if (scope) {
+      r = await new Promise<GeolocationPosition>((res, rej) =>
+        navigator.geolocation.getCurrentPosition(res, rej, { timeout: 15000 }),
+      ).then(
+        async pos => (await shareLocation2(scope, pos.coords.latitude, pos.coords.longitude)) ? "ok" as const : "error" as const,
+        (e: GeolocationPositionError) => (e.code === 1 ? "denied" as const : "error" as const),
+      );
+    } else {
+      r = await shareMyLocation(side);
+    }
     setBusy(false);
     setShareMsg(r === "ok" ? t.locShared : r === "denied" ? t.locDenied : t.locFail);
     if (r === "ok") reloadLocs();

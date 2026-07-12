@@ -66,10 +66,23 @@ export function useSettings(): Settings {
 
 // ---- share-link sync (settings encoded in URL hash) ----
 
-const SHARE_KEYS = [
+export const SHARE_KEYS = [
   "wakeA", "sleepA", "wakeB", "sleepB", "meet", "start", "annivs",
   "nameA", "nameB", "emojiA", "emojiB",
 ] as const;
+
+/** Subscribe to settings changes (returns unsubscribe). */
+export function subscribeSettings(fn: () => void): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+/** Shared-keys slice of the current settings. */
+export function sharedSlice(): Record<string, unknown> {
+  const o: Record<string, unknown> = {};
+  SHARE_KEYS.forEach(k => (o[k] = current[k]));
+  return o;
+}
 
 export function encodeShare(): string {
   const o: Record<string, unknown> = {};
