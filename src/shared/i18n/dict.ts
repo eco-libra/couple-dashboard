@@ -62,6 +62,13 @@ export interface Dict {
   timeAgo: (mins: number) => string;
   profileLabel: string; profileName: string; profileEmoji: string; profileNote: string;
   answerOf: (name: string) => string;
+  accTitle: string; accMoreHint: string;
+  accSignIn: string; accSignInNote: string; accSendLink: string; accLinkSent: string;
+  accCreateLabel: string; accCreateNote: string; accCreateBtn: string;
+  accJoinLabel: string; accCodePh: string; accJoinBtn: string; accJoined: string;
+  accCodeNotFound: string; accCoupleFull: string;
+  accCoupleLabel: string; accSignedInAs: string; accInviteNote: string;
+  accCopyInvite: string; accPaired: string; accSignOut: string;
   homeTimeCard: string; homeTalkCard: string; homeMeetCard: string; homeMemCard: string; homeMilestoneCard: string;
   language: string;
 }
@@ -169,6 +176,20 @@ export const DICTS: Record<Lang, Dict> = {
     profileName: "名前", profileEmoji: "絵文字",
     profileNote: "名前と好きな絵文字は、時計・地図・心理テスト・通知など全体に反映されます。他の設定と同じく自動で相手にもバックアップ共有されます。",
     answerOf: n => `${n}の答え`,
+    accTitle: "アカウントとペア", accMoreHint: "ログイン・カップルの招待",
+    accSignIn: "メールでログイン",
+    accSignInNote: "メールアドレスにログイン用のリンクを送ります。パスワードは不要です。",
+    accSendLink: "ログインリンクを送る", accLinkSent: "送信しました✓ メールを確認してください",
+    accCreateLabel: "新しくペアを作る",
+    accCreateNote: "あなたが最初のメンバーになり、相手を招待コードで迎えます。",
+    accCreateBtn: "ペアを作成",
+    accJoinLabel: "招待コードで参加", accCodePh: "招待コード", accJoinBtn: "参加する",
+    accJoined: "参加しました✓",
+    accCodeNotFound: "コードが見つかりません", accCoupleFull: "このペアはすでに2人です",
+    accCoupleLabel: "あなたのペア", accSignedInAs: "ログイン中",
+    accInviteNote: "相手にこのコード（またはリンク）を送ってください：",
+    accCopyInvite: "招待リンクをコピー", accPaired: "二人そろっています",
+    accSignOut: "ログアウト",
   },
   en: {
     locale: "en-US",
@@ -272,6 +293,20 @@ export const DICTS: Record<Lang, Dict> = {
     profileName: "Name", profileEmoji: "Emoji",
     profileNote: "Names and avatar emoji appear across clocks, the map, the quiz and notifications. Backed up and shared like other settings.",
     answerOf: n => `${n}'s answer`,
+    accTitle: "Account & pairing", accMoreHint: "Sign in / couple invite",
+    accSignIn: "Sign in with email",
+    accSignInNote: "We'll email you a sign-in link. No password needed.",
+    accSendLink: "Send sign-in link", accLinkSent: "Sent ✓ — check your inbox",
+    accCreateLabel: "Start a new pair",
+    accCreateNote: "You'll be the first member and invite your partner with a code.",
+    accCreateBtn: "Create pair",
+    accJoinLabel: "Join with invite code", accCodePh: "Invite code", accJoinBtn: "Join",
+    accJoined: "Joined ✓",
+    accCodeNotFound: "Code not found", accCoupleFull: "This pair already has two members",
+    accCoupleLabel: "Your pair", accSignedInAs: "Signed in as",
+    accInviteNote: "Send your partner this code (or link):",
+    accCopyInvite: "Copy invite link", accPaired: "You're both here",
+    accSignOut: "Sign out",
   },
   es: {
     locale: "es-CL",
@@ -375,5 +410,19 @@ export const DICTS: Record<Lang, Dict> = {
     profileName: "Nombre", profileEmoji: "Emoji",
     profileNote: "Los nombres y el emoji aparecen en los relojes, el mapa, el test y las notificaciones. Se respaldan y comparten como los demás ajustes.",
     answerOf: n => `Respuesta de ${n}`,
+    accTitle: "Cuenta y pareja", accMoreHint: "Iniciar sesión / invitación",
+    accSignIn: "Iniciar sesión con email",
+    accSignInNote: "Te enviaremos un enlace de acceso por correo. Sin contraseña.",
+    accSendLink: "Enviar enlace", accLinkSent: "Enviado ✓ — revisa tu correo",
+    accCreateLabel: "Crear una pareja nueva",
+    accCreateNote: "Serás el primer miembro e invitarás a tu pareja con un código.",
+    accCreateBtn: "Crear pareja",
+    accJoinLabel: "Unirse con código", accCodePh: "Código de invitación", accJoinBtn: "Unirme",
+    accJoined: "Listo ✓",
+    accCodeNotFound: "Código no encontrado", accCoupleFull: "Esta pareja ya tiene dos miembros",
+    accCoupleLabel: "Tu pareja", accSignedInAs: "Sesión iniciada como",
+    accInviteNote: "Envíale a tu pareja este código (o enlace):",
+    accCopyInvite: "Copiar enlace de invitación", accPaired: "Ya están los dos",
+    accSignOut: "Cerrar sesión",
   },
 };

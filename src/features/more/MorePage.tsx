@@ -54,6 +54,11 @@ export function MorePage() {
     <main className="page">
       <h1 className="page-title">{t.navMore}</h1>
 
+      <a className="card" href="/account" style={{ textDecoration: "none" }}>
+        <p className="label">👤 {t.accTitle}</p>
+        <p className="muted" style={{ margin: 0 }}>{t.accMoreHint} →</p>
+      </a>
+
       <section className="card">
         <p className="label">{t.language}</p>
         <div className="lang-switch">
